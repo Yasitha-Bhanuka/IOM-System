@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization; // Standard in .NET 4.x for JSON
 
-namespace InventoryManagementSystem.Helpers
+namespace IOMSystem.Web.Helpers
 {
     public class ApiClient
     {

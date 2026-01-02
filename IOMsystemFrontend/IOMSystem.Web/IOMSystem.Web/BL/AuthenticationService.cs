@@ -5,10 +5,10 @@ using System.Web;
 using System.Web.Security;
 using System.Collections.Generic;
 using System.Linq; // Added for convenience if needed
-using InventoryManagementSystem.Helpers;
-using InventoryManagementSystem.Models;
+using IOMSystem.Web.Helpers;
+using IOMSystem.Web.Models;
 
-namespace InventoryManagementSystem.BL
+namespace IOMSystem.Web.BL
 {
     public class AuthenticationService
     {
@@ -21,14 +21,14 @@ namespace InventoryManagementSystem.BL
         {
             try
             {
-                var loginDto = new InventoryManagementSystem.Helpers.LoginDto
+                var loginDto = new IOMSystem.Web.Helpers.LoginDto
                 {
                     Email = email,
                     Password = password
                 };
 
                 // Setup helper to call Post with return type since we updated ApiClient
-                var userDto = ApiClient.Instance.Post<InventoryManagementSystem.Helpers.UserDto, InventoryManagementSystem.Helpers.LoginDto>("users/login", loginDto);
+                var userDto = ApiClient.Instance.Post<IOMSystem.Web.Helpers.UserDto, IOMSystem.Web.Helpers.LoginDto>("users/login", loginDto);
 
                 if (userDto == null)
                 {
@@ -56,7 +56,7 @@ namespace InventoryManagementSystem.BL
         }
 
         // Map API DTO to Legacy User Entity
-        private User MapToEntity(InventoryManagementSystem.Helpers.UserDto dto)
+        private User MapToEntity(IOMSystem.Web.Helpers.UserDto dto)
         {
             var user = new User
             {

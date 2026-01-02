@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using InventoryManagementSystem.Helpers;
-using InventoryManagementSystem.Models;
+using IOMSystem.Web.Helpers;
+using IOMSystem.Web.Models;
 
-namespace InventoryManagementSystem.BL
+namespace IOMSystem.Web.BL
 {
     public class ProductService
     {
@@ -14,7 +14,7 @@ namespace InventoryManagementSystem.BL
 
         public List<Product> GetAllProducts()
         {
-            var productDtos = ApiClient.Instance.Get<List<InventoryManagementSystem.Helpers.ProductDto>>("products");
+            var productDtos = ApiClient.Instance.Get<List<IOMSystem.Web.Helpers.ProductDto>>("products");
             if (productDtos == null) return new List<Product>();
 
             return productDtos.Select(MapToEntity).ToList();
@@ -28,7 +28,7 @@ namespace InventoryManagementSystem.BL
 
         public bool CreateProduct(string productName, string locationCode, string productID, decimal price, int stockQuantity, int minStockThreshold)
         {
-            var dto = new InventoryManagementSystem.Helpers.ProductDto
+            var dto = new IOMSystem.Web.Helpers.ProductDto
             {
                 ProductName = productName,
                 LocationCode = locationCode,
@@ -47,7 +47,7 @@ namespace InventoryManagementSystem.BL
             var product = GetProductBySKU(sku);
             if (product == null) return false;
 
-            var dto = new InventoryManagementSystem.Helpers.ProductDto
+            var dto = new IOMSystem.Web.Helpers.ProductDto
             {
                 SKU = product.SKU,
                 ProductName = productName,
@@ -73,7 +73,7 @@ namespace InventoryManagementSystem.BL
             var product = GetProductBySKU(sku);
             if (product == null) return false;
 
-            var dto = new InventoryManagementSystem.Helpers.ProductDto
+            var dto = new IOMSystem.Web.Helpers.ProductDto
             {
                 SKU = product.SKU,
                 ProductName = product.ProductName,
@@ -101,7 +101,7 @@ namespace InventoryManagementSystem.BL
             return GetAllProducts().Where(p => p.IsActive).ToList();
         }
 
-        private Product MapToEntity(InventoryManagementSystem.Helpers.ProductDto dto)
+        private Product MapToEntity(IOMSystem.Web.Helpers.ProductDto dto)
         {
             return new Product
             {

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using InventoryManagementSystem.Helpers;
-using InventoryManagementSystem.Models;
+using IOMSystem.Web.Helpers;
+using IOMSystem.Web.Models;
 
-namespace InventoryManagementSystem.BL
+namespace IOMSystem.Web.BL
 {
     public class BranchService
     {

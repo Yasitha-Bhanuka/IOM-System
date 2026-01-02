@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using InventoryManagementSystem.Helpers;
-using InventoryManagementSystem.Models;
+using IOMSystem.Web.Helpers;
+using IOMSystem.Web.Models;
 
-namespace InventoryManagementSystem.BL
+namespace IOMSystem.Web.BL
 {
     public class OrderService
     {
@@ -16,11 +16,11 @@ namespace InventoryManagementSystem.BL
         public int PlaceOrder(int userId, List<OrderItemDto> items, string notes = null)
         {
             // Convert legacy UI DTO to API DTO.
-            var createOrderDto = new InventoryManagementSystem.Helpers.CreateOrderDto
+            var createOrderDto = new IOMSystem.Web.Helpers.CreateOrderDto
             {
                 UserId = userId,
                 Notes = notes,
-                Items = items.Select(i => new InventoryManagementSystem.Helpers.CreateOrderItemDto
+                Items = items.Select(i => new IOMSystem.Web.Helpers.CreateOrderItemDto
                 {
                     SKU = i.SKU,
                     Quantity = i.Quantity
@@ -28,27 +28,27 @@ namespace InventoryManagementSystem.BL
             };
 
             // Return the OrderId from the response
-            var result = ApiClient.Instance.Post<InventoryManagementSystem.Helpers.OrderDto, InventoryManagementSystem.Helpers.CreateOrderDto>("orders", createOrderDto);
+            var result = ApiClient.Instance.Post<IOMSystem.Web.Helpers.OrderDto, IOMSystem.Web.Helpers.CreateOrderDto>("orders", createOrderDto);
             return result != null ? result.OrderId : 0;
         }
 
         public List<Order> GetAllOrders()
         {
-            var dtos = ApiClient.Instance.Get<List<InventoryManagementSystem.Helpers.OrderDto>>("orders");
+            var dtos = ApiClient.Instance.Get<List<IOMSystem.Web.Helpers.OrderDto>>("orders");
             if (dtos == null) return new List<Order>();
             return dtos.Select(MapToEntity).ToList();
         }
 
         public List<Order> GetUserOrders(int userId)
         {
-            var dtos = ApiClient.Instance.Get<List<InventoryManagementSystem.Helpers.OrderDto>>($"orders/user/{userId}");
+            var dtos = ApiClient.Instance.Get<List<IOMSystem.Web.Helpers.OrderDto>>($"orders/user/{userId}");
             if (dtos == null) return new List<Order>();
             return dtos.Select(MapToEntity).ToList();
         }
 
         public Order GetOrderDetails(int orderId)
         {
-            var dto = ApiClient.Instance.Get<InventoryManagementSystem.Helpers.OrderDto>($"orders/{orderId}");
+            var dto = ApiClient.Instance.Get<IOMSystem.Web.Helpers.OrderDto>($"orders/{orderId}");
             return dto != null ? MapToEntity(dto) : null;
         }
 
@@ -75,7 +75,7 @@ namespace InventoryManagementSystem.BL
             return false;
         }
 
-        private Order MapToEntity(InventoryManagementSystem.Helpers.OrderDto dto)
+        private Order MapToEntity(IOMSystem.Web.Helpers.OrderDto dto)
         {
             return new Order
             {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace InventoryManagementSystem.Models
+namespace IOMSystem.Web.Models
 {
     public static class OrderStatus
     {

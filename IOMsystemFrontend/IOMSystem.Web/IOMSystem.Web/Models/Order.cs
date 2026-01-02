@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace InventoryManagementSystem.Models
+namespace IOMSystem.Web.Models
 {
     public class Order
     {

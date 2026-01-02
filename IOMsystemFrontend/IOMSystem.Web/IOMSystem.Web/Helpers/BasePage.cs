@@ -1,9 +1,9 @@
 using System;
 using System.Web.UI;
-using InventoryManagementSystem.BL;
-using InventoryManagementSystem.Models;
+using IOMSystem.Web.BL;
+using IOMSystem.Web.Models;
 
-namespace InventoryManagementSystem.Helpers
+namespace IOMSystem.Web.Helpers
 {
     public class BasePage : Page
     {

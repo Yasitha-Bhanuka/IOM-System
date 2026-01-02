@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace InventoryManagementSystem.Models
+namespace IOMSystem.Web.Models
 {
     public class Stationary
     {

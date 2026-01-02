@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace InventoryManagementSystem.Models
+namespace IOMSystem.Web.Models
 {
     [Table("Users")]
     public class User

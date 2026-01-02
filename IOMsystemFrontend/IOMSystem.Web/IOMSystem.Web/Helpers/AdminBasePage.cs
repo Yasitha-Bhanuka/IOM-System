@@ -1,6 +1,6 @@
 using System;
 
-namespace InventoryManagementSystem.Helpers
+namespace IOMSystem.Web.Helpers
 {
     public class AdminBasePage : BasePage
     {
