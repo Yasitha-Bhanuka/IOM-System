@@ -73,4 +73,21 @@ namespace InventoryManagementSystem.Helpers
         public string BranchName { get; set; }
         public string RoleName { get; set; }
     }
+
+    public class BranchDto
+    {
+        public int BranchId { get; set; }
+        public string BranchName { get; set; }
+        public string BranchCode { get; set; }
+        public string Address { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    public class StationaryDto
+    {
+        public string LocationCode { get; set; }
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedDate { get; set; }
+    }
 }

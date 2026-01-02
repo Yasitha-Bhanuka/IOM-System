@@ -43,6 +43,17 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<List<User>> GetAllAsync()
+    {
+        return await _context.Users.Include(u => u.Role).ToListAsync();
+    }
+
+    public async Task UpdateAsync(User user)
+    {
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<Role?> GetRoleByNameAsync(string roleName)
     {
         return await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);

@@ -83,10 +83,70 @@ public class UserService : IUserService
         };
     }
 
+    public async Task<UserDto?> GetUserByIdAsync(int userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return null;
+        return MapToDto(user);
+    }
+
     public async Task<List<UserDto>> GetAllUsersAsync()
     {
-        // Not implemented in repo yet, but simple enough to add later
-        return new List<UserDto>();
+        var users = await _userRepository.GetAllAsync();
+        return users.Select(MapToDto).ToList();
+    }
+
+    public async Task<bool> UpdateUserAsync(int userId, UserDto userDto)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        user.FullName = userDto.FullName;
+        user.BranchName = userDto.BranchName;
+        user.IsActive = userDto.IsActive;
+        // Role Update logic if needed, assumes RoleName in DTO is valid or handled separately
+        // Since Entity uses RoleId, we might need to lookup Role if changed.
+        // For now, let's assume basic profile updates. If Role update required, need to fetch Role.
+
+        await _userRepository.UpdateAsync(user);
+        return true;
+    }
+
+    public async Task<bool> ChangePasswordAsync(int userId, string newPassword)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        CreatePasswordHash(newPassword, out string passwordHash, out string passwordSalt);
+        user.PasswordHash = passwordHash;
+        user.PasswordSalt = passwordSalt;
+
+        await _userRepository.UpdateAsync(user);
+        return true;
+    }
+
+    public async Task<bool> DeleteUserAsync(int userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        user.IsActive = false; // Soft Delete
+        await _userRepository.UpdateAsync(user);
+        return true;
+    }
+
+    private UserDto MapToDto(User user)
+    {
+        return new UserDto
+        {
+            UserId = user.UserId,
+            UserEmail = user.UserEmail,
+            FullName = user.FullName ?? "",
+            BranchName = user.BranchName,
+            RoleName = user.Role?.RoleName ?? "Unknown",
+            IsActive = user.IsActive,
+            CreatedDate = user.CreatedDate
+        };
     }
 
     // Helper methods for password hashing (using SHA256 as per likely legacy or improved standard)

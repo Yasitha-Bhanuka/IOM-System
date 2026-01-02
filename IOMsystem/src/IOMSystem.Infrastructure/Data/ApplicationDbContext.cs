@@ -16,6 +16,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Branch> Branches { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<UserRegistrationRequest> UserRegistrationRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

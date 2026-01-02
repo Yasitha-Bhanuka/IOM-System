@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
 using InventoryManagementSystem.BL;
-using InventoryManagementSystem.DAL;
 using InventoryManagementSystem.Helpers;
 using InventoryManagementSystem.Models;
 
@@ -30,22 +29,20 @@ namespace InventoryManagementSystem.UI.Admin
         {
             try
             {
-                // Get active branches from Branches table
-                using (var context = new InventoryDbContext())
+                // Get active branches from API via BranchService
+                var branchService = new BranchService();
+                var branches = branchService.GetActiveBranches();
+
+                // Sort by BranchCode
+                branches = branches.OrderBy(b => b.BranchCode).ToList();
+
+                ddlBranchFilter.Items.Clear();
+                ddlBranchFilter.Items.Add(new ListItem("All Branches", ""));
+
+                foreach (var branch in branches)
                 {
-                    var branches = context.Branches
-                        .Where(b => b.IsActive)
-                        .OrderBy(b => b.BranchCode)
-                        .ToList();
-
-                    ddlBranchFilter.Items.Clear();
-                    ddlBranchFilter.Items.Add(new ListItem("All Branches", ""));
-
-                    foreach (var branch in branches)
-                    {
-                        string displayText = $"{branch.BranchCode} - {branch.BranchName}";
-                        ddlBranchFilter.Items.Add(new ListItem(displayText, branch.BranchName));
-                    }
+                    string displayText = $"{branch.BranchCode} - {branch.BranchName}";
+                    ddlBranchFilter.Items.Add(new ListItem(displayText, branch.BranchName));
                 }
             }
             catch (Exception ex)

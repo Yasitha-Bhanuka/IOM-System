@@ -14,7 +14,12 @@ public class StationaryRepository : IStationaryRepository
         _context = context;
     }
 
-    public async Task<Stationary> GetByCodeAsync(string locationCode)
+    public async Task<List<Stationary>> GetAllAsync()
+    {
+        return await _context.Stationaries.ToListAsync();
+    }
+
+    public async Task<Stationary?> GetByCodeAsync(string locationCode)
     {
         return await _context.Stationaries
             .FirstOrDefaultAsync(s => s.LocationCode == locationCode);
@@ -24,5 +29,17 @@ public class StationaryRepository : IStationaryRepository
     {
         var stationary = await GetByCodeAsync(locationCode);
         return stationary != null && stationary.IsActive;
+    }
+
+    public async Task AddAsync(Stationary stationary)
+    {
+        await _context.Stationaries.AddAsync(stationary);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Stationary stationary)
+    {
+        _context.Stationaries.Update(stationary);
+        await _context.SaveChangesAsync();
     }
 }

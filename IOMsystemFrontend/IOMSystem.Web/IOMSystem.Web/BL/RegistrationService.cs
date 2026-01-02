@@ -1,59 +1,34 @@
 using System;
 using System.Collections.Generic;
-using InventoryManagementSystem.DAL;
+using System.Linq;
+using InventoryManagementSystem.Helpers;
 using InventoryManagementSystem.Models;
 
 namespace InventoryManagementSystem.BL
 {
     public class RegistrationService
     {
-        private RegistrationRequestRepository _requestRepository;
-        private UserRepository _userRepository;
-        private RoleRepository _roleRepository;
-
         public RegistrationService()
         {
-            _requestRepository = new RegistrationRequestRepository();
-            _userRepository = new UserRepository();
-            _roleRepository = new RoleRepository();
         }
 
         // Create registration request
         public bool CreateRegistrationRequest(string email, string password, string branchName, string fullName = null, string phoneNumber = null)
         {
+            var dto = new RegistrationRequestDto
+            {
+                UserEmail = email,
+                Password = password,
+                BranchName = branchName,
+                FullName = fullName,
+                PhoneNumber = phoneNumber,
+                Status = "Pending"
+            };
+
             try
             {
-                // Check if user already exists
-                if (_userRepository.EmailExists(email))
-                {
-                    return false; // User already exists
-                }
-
-                // Check if pending request already exists
-                if (_requestRepository.PendingRequestExists(email))
-                {
-                    return false; // Pending request already exists
-                }
-
-                // Hash password
-                var authService = new AuthenticationService();
-                string salt = authService.GenerateSalt();
-                string passwordHash = authService.HashPassword(password, salt);
-
-                // Create request
-                var request = new UserRegistrationRequest
-                {
-                    UserEmail = email,
-                    PasswordHash = passwordHash,
-                    PasswordSalt = salt,
-                    BranchName = branchName,
-                    FullName = fullName,
-                    PhoneNumber = phoneNumber,
-                    RequestDate = DateTime.Now,
-                    Status = "Pending"
-                };
-
-                return _requestRepository.CreateRequest(request);
+                ApiClient.Instance.Post<string, RegistrationRequestDto>("registrations", dto);
+                return true;
             }
             catch
             {
@@ -64,19 +39,25 @@ namespace InventoryManagementSystem.BL
         // Get all pending requests
         public List<UserRegistrationRequest> GetPendingRequests()
         {
-            return _requestRepository.GetPendingRequests();
+            var dtos = ApiClient.Instance.Get<List<RegistrationRequestDto>>("registrations/pending");
+            if (dtos == null) return new List<UserRegistrationRequest>();
+            return dtos.Select(MapToEntity).ToList();
         }
 
         // Get all requests
         public List<UserRegistrationRequest> GetAllRequests()
         {
-            return _requestRepository.GetAllRequests();
+            var dtos = ApiClient.Instance.Get<List<RegistrationRequestDto>>("registrations");
+            if (dtos == null) return new List<UserRegistrationRequest>();
+            return dtos.Select(MapToEntity).ToList();
         }
 
         // Get request by ID
         public UserRegistrationRequest GetRequestById(int requestId)
         {
-            return _requestRepository.GetRequestById(requestId);
+            // Requires endpoint GET /api/registrations/{id}
+            var dto = ApiClient.Instance.Get<RegistrationRequestDto>($"registrations/{requestId}");
+            return dto != null ? MapToEntity(dto) : null;
         }
 
         // Approve registration request
@@ -84,40 +65,8 @@ namespace InventoryManagementSystem.BL
         {
             try
             {
-                var request = _requestRepository.GetRequestById(requestId);
-                if (request == null || request.Status != "Pending")
-                {
-                    return false;
-                }
-
-                // Get Customer role
-                var customerRole = _roleRepository.GetRoleByName("Customer");
-                if (customerRole == null)
-                {
-                    return false;
-                }
-
-                // Create user account
-                var user = new User
-                {
-                    UserEmail = request.UserEmail,
-                    PasswordHash = request.PasswordHash,
-                    PasswordSalt = request.PasswordSalt,
-                    BranchName = request.BranchName,
-                    FullName = request.FullName,
-                    PhoneNumber = request.PhoneNumber,
-                    RoleId = customerRole.RoleId,
-                    IsActive = true,
-                    CreatedDate = DateTime.Now
-                };
-
-                if (_userRepository.CreateUser(user))
-                {
-                    // Update request status
-                    return _requestRepository.UpdateRequestStatus(requestId, "Approved", approvedByUserId);
-                }
-
-                return false;
+                ApiClient.Instance.Post<string, int>($"registrations/approve/{requestId}", approvedByUserId);
+                return true;
             }
             catch
             {
@@ -128,15 +77,16 @@ namespace InventoryManagementSystem.BL
         // Reject registration request
         public bool RejectRequest(int requestId, int rejectedByUserId, string rejectionReason)
         {
+            var dto = new RegistrationRequestDto
+            {
+                ActionByUserId = rejectedByUserId,
+                RejectionReason = rejectionReason
+            };
+
             try
             {
-                var request = _requestRepository.GetRequestById(requestId);
-                if (request == null || request.Status != "Pending")
-                {
-                    return false;
-                }
-
-                return _requestRepository.UpdateRequestStatus(requestId, "Rejected", rejectedByUserId, rejectionReason);
+                ApiClient.Instance.Post<string, RegistrationRequestDto>($"registrations/reject/{requestId}", dto);
+                return true;
             }
             catch
             {
@@ -147,20 +97,30 @@ namespace InventoryManagementSystem.BL
         // Check if email has pending request
         public bool HasPendingRequest(string email)
         {
-            return _requestRepository.PendingRequestExists(email);
+            var pending = GetPendingRequests();
+            return pending.Any(r => r.UserEmail.Equals(email, StringComparison.OrdinalIgnoreCase));
         }
 
         // Delete registration request permanently
         public bool DeleteRequest(int requestId)
         {
-            try
+            return ApiClient.Instance.Delete($"registrations/{requestId}");
+        }
+
+        private UserRegistrationRequest MapToEntity(RegistrationRequestDto dto)
+        {
+            return new UserRegistrationRequest
             {
-                return _requestRepository.DeleteRequest(requestId);
-            }
-            catch
-            {
-                return false;
-            }
+                RequestId = dto.RequestId,
+                UserEmail = dto.UserEmail,
+                FullName = dto.FullName,
+                BranchName = dto.BranchName,
+                PhoneNumber = dto.PhoneNumber,
+                RequestDate = dto.RequestDate,
+                Status = dto.Status,
+                ActionByUserId = dto.ActionByUserId,
+                RejectionReason = dto.RejectionReason
+            };
         }
     }
 }

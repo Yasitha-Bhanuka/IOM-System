@@ -1,89 +1,130 @@
 using System.Collections.Generic;
-using InventoryManagementSystem.DAL;
+using System.Linq;
+using InventoryManagementSystem.Helpers;
 using InventoryManagementSystem.Models;
 
 namespace InventoryManagementSystem.BL
 {
     public class BranchService
     {
-        private BranchRepository _branchRepository;
-
         public BranchService()
         {
-            _branchRepository = new BranchRepository();
         }
 
         // Get all branches
         public List<Branch> GetAllBranches()
         {
-            return _branchRepository.GetAllBranches();
+            var dtos = ApiClient.Instance.Get<List<BranchDto>>("branches");
+            if (dtos == null) return new List<Branch>();
+            return dtos.Select(MapToEntity).ToList();
         }
 
         // Get active branches
         public List<Branch> GetActiveBranches()
         {
-            return _branchRepository.GetActiveBranches();
+            var all = GetAllBranches();
+            return all.Where(b => b.IsActive).ToList();
         }
 
         // Get branch by ID
         public Branch GetBranchById(int branchId)
         {
-            return _branchRepository.GetBranchById(branchId);
+            var dto = ApiClient.Instance.Get<BranchDto>($"branches/{branchId}");
+            return dto != null ? MapToEntity(dto) : null;
         }
 
-        // Get branch by name
+        // Get branch by name - Client side filter for now
         public Branch GetBranchByName(string branchName)
         {
-            return _branchRepository.GetBranchByName(branchName);
+            var all = GetAllBranches();
+            return all.FirstOrDefault(b => b.BranchName.Equals(branchName, System.StringComparison.OrdinalIgnoreCase));
         }
 
         // Get branch by code
         public Branch GetBranchByCode(string branchCode)
         {
-            return _branchRepository.GetBranchByCode(branchCode);
+            var all = GetAllBranches();
+            return all.FirstOrDefault(b => b.BranchCode.Equals(branchCode, System.StringComparison.OrdinalIgnoreCase));
         }
 
         // Create branch
         public bool CreateBranch(Branch branch)
         {
-            // Check if branch name or code already exists
-            if (_branchRepository.BranchNameExists(branch.BranchName) ||
-                _branchRepository.BranchCodeExists(branch.BranchCode))
+            var dto = new BranchDto
             {
-                return false;
-            }
-
-            return _branchRepository.CreateBranch(branch);
+                BranchName = branch.BranchName,
+                BranchCode = branch.BranchCode,
+                Address = branch.Address,
+                City = branch.City,
+                State = branch.State,
+                PhoneNumber = branch.PhoneNumber,
+                IsActive = branch.IsActive
+            };
+            // Assuming POST returns ID or bool. ApiClient.Post returns bool currently unless I use Post<T,R>.
+            // We can just return success/fail
+            return ApiClient.Instance.Post("branches", dto);
         }
 
         // Update branch
         public bool UpdateBranch(Branch branch)
         {
-            return _branchRepository.UpdateBranch(branch);
+            var dto = new BranchDto
+            {
+                BranchId = branch.BranchId, // Important for ID check
+                BranchName = branch.BranchName,
+                BranchCode = branch.BranchCode,
+                Address = branch.Address,
+                City = branch.City,
+                State = branch.State,
+                PhoneNumber = branch.PhoneNumber,
+                IsActive = branch.IsActive
+            };
+            return ApiClient.Instance.Put($"branches/{branch.BranchId}", dto);
         }
 
         // Activate branch
         public bool ActivateBranch(int branchId)
         {
-            return _branchRepository.ActivateBranch(branchId);
+            var branch = GetBranchById(branchId);
+            if (branch == null) return false;
+            branch.IsActive = true;
+            return UpdateBranch(branch);
         }
 
         // Deactivate branch
         public bool DeactivateBranch(int branchId)
         {
-            return _branchRepository.DeactivateBranch(branchId);
+            var branch = GetBranchById(branchId);
+            if (branch == null) return false;
+            branch.IsActive = false;
+            return UpdateBranch(branch);
         }
 
         // Check if branch name exists
         public bool BranchNameExists(string branchName)
         {
-            return _branchRepository.BranchNameExists(branchName);
+            return GetBranchByName(branchName) != null;
         }
 
         // Check if branch code exists
         public bool BranchCodeExists(string branchCode)
         {
-            return _branchRepository.BranchCodeExists(branchCode);
+            return GetBranchByCode(branchCode) != null;
+        }
+
+        private Branch MapToEntity(BranchDto dto)
+        {
+            return new Branch
+            {
+                BranchId = dto.BranchId,
+                BranchName = dto.BranchName,
+                BranchCode = dto.BranchCode,
+                Address = dto.Address,
+                City = dto.City ?? "", // Handle potential nulls
+                State = dto.State ?? "",
+                PhoneNumber = dto.PhoneNumber,
+                IsActive = dto.IsActive
+            };
         }
     }
 }

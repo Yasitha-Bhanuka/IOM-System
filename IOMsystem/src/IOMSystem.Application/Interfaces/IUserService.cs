@@ -7,5 +7,9 @@ public interface IUserService
     Task<UserDto?> LoginAsync(LoginDto loginDto);
     Task<bool> RegisterUserAsync(RegisterUserDto registerDto);
     Task<UserDto?> GetUserByEmailAsync(string email);
-    Task<List<UserDto>> GetAllUsersAsync(); // Admin only
+    Task<UserDto?> GetUserByIdAsync(int userId);
+    Task<List<UserDto>> GetAllUsersAsync();
+    Task<bool> UpdateUserAsync(int userId, UserDto userDto);
+    Task<bool> ChangePasswordAsync(int userId, string newPassword);
+    Task<bool> DeleteUserAsync(int userId); // Soft delete via Update or strict
 }

@@ -21,11 +21,16 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IStationaryRepository, StationaryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 
 // Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IStationaryService, StationaryService>();
+builder.Services.AddScoped<IRegistrationRequestRepository, RegistrationRequestRepository>();
+builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 
 builder.Services.AddCors(options =>
 {
