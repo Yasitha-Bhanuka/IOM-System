@@ -52,6 +52,46 @@ namespace InventoryManagementSystem.Helpers
             }
         }
 
+        public TResponse Post<TResponse, TRequest>(string endpoint, TRequest data)
+        {
+            try
+            {
+                string json = _serializer.Serialize(data);
+                HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = _client.PostAsync(endpoint, content).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseJson = response.Content.ReadAsStringAsync().Result;
+                    return _serializer.Deserialize<TResponse>(responseJson);
+                }
+                return default(TResponse);
+            }
+            catch
+            {
+                return default(TResponse);
+            }
+        }
+
+        public TResponse Post<TResponse, TRequest>(string endpoint, TRequest data)
+        {
+            try
+            {
+                string json = _serializer.Serialize(data);
+                HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = _client.PostAsync(endpoint, content).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseJson = response.Content.ReadAsStringAsync().Result;
+                    return _serializer.Deserialize<TResponse>(responseJson);
+                }
+                return default(TResponse);
+            }
+            catch
+            {
+                return default(TResponse);
+            }
+        }
+
         public bool Post<T>(string endpoint, T data)
         {
             try
