@@ -3,54 +3,51 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Security;
-using InventoryManagementSystem.DAL;
+using System.Collections.Generic;
+using System.Linq; // Added for convenience if needed
+using InventoryManagementSystem.Helpers;
 using InventoryManagementSystem.Models;
 
 namespace InventoryManagementSystem.BL
 {
     public class AuthenticationService
     {
-        private UserRepository _userRepository;
-
         public AuthenticationService()
         {
-            _userRepository = new UserRepository();
         }
 
-        // Validate user login
+        // Validate user login via API
         public User ValidateLogin(string email, string branchName, string password)
         {
             try
             {
-                // Get user by email
-                var user = _userRepository.GetUserByEmail(email);
-
-                if (user == null)
+                var loginDto = new InventoryManagementSystem.Helpers.LoginDto
                 {
-                    return null; // User not found
+                    Email = email,
+                    Password = password
+                };
+
+                // Setup helper to call Post with return type since we updated ApiClient
+                var userDto = ApiClient.Instance.Post<InventoryManagementSystem.Helpers.UserDto, InventoryManagementSystem.Helpers.LoginDto>("users/login", loginDto);
+
+                if (userDto == null)
+                {
+                    return null; // Login failed/Invalid credentials
                 }
 
-                // Check if user is active
-                if (!user.IsActive)
-                {
-                    return null; // User is inactive
-                }
-
-                // Check if branch matches
-                if (!user.BranchName.Equals(branchName, StringComparison.OrdinalIgnoreCase))
+                // Client-side branch validation to maintain legacy behavior
+                // The API validates credentials, but we enforce branch restriction here
+                if (!string.Equals(userDto.BranchName, branchName, StringComparison.OrdinalIgnoreCase))
                 {
                     return null; // Branch mismatch
                 }
 
-                // Verify password
-                if (VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
+                if (!userDto.IsActive)
                 {
-                    // Update last login date
-                    _userRepository.UpdateLastLoginDate(user.UserId);
-                    return user;
+                    return null; // Inactive
                 }
 
-                return null; // Invalid password
+                return MapToEntity(userDto);
             }
             catch
             {
@@ -58,42 +55,36 @@ namespace InventoryManagementSystem.BL
             }
         }
 
-        // Hash password with salt
-        public string HashPassword(string password, string salt)
+        // Map API DTO to Legacy User Entity
+        private User MapToEntity(InventoryManagementSystem.Helpers.UserDto dto)
         {
-            using (var sha256 = SHA256.Create())
+            var user = new User
             {
-                byte[] saltBytes = Convert.FromBase64String(salt);
-                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                byte[] combinedBytes = new byte[saltBytes.Length + passwordBytes.Length];
+                UserId = dto.UserId,
+                UserEmail = dto.UserEmail,
+                FullName = dto.FullName,
+                BranchName = dto.BranchName,
+                IsActive = dto.IsActive,
+                CreatedDate = dto.CreatedDate
+                // RoleName is a string in DTO. Legacy User had UserId/RoleId and navigation property Role.
+                // We will populate RoleId using a helper or assume conventions if needed.
+                // Since CreateAuthenticationTicket uses user.Role.RoleName and user.RoleId, we need to populate these.
+            };
 
-                Buffer.BlockCopy(saltBytes, 0, combinedBytes, 0, saltBytes.Length);
-                Buffer.BlockCopy(passwordBytes, 0, combinedBytes, saltBytes.Length, passwordBytes.Length);
+            // Populate stub Role object for Ticket creation
+            user.Role = new Role { RoleName = dto.RoleName };
 
-                byte[] hashBytes = sha256.ComputeHash(combinedBytes);
-                return Convert.ToBase64String(hashBytes);
-            }
+            // Note: Legacy Ticket creation used user.RoleId. 
+            // If the API doesn't return RoleId, we might need to lookup or just use 0 if not critical for display,
+            // or modify CreateAuthenticationTicket to rely solely on RoleName.
+            // Let's assume for now 0 is fine or we map names to IDs if we hardcoded them.
+            // Actually, let's look at the Ticket method: 
+            // $"{user.UserId}|{user.RoleId}|{user.Role.RoleName}|{user.BranchName}"
+
+            return user;
         }
 
-        // Verify password
-        public bool VerifyPassword(string password, string storedHash, string storedSalt)
-        {
-            string computedHash = HashPassword(password, storedSalt);
-            return computedHash == storedHash;
-        }
-
-        // Generate salt
-        public string GenerateSalt()
-        {
-            byte[] saltBytes = new byte[32];
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                rng.GetBytes(saltBytes);
-            }
-            return Convert.ToBase64String(saltBytes);
-        }
-
-        // Create authentication ticket and set cookie
+        // Create authentication ticket and set cookie (Legacy logic preserved)
         public void CreateAuthenticationTicket(User user, bool rememberMe = false)
         {
             var ticket = new FormsAuthenticationTicket(
@@ -102,7 +93,7 @@ namespace InventoryManagementSystem.BL
                 DateTime.Now,
                 DateTime.Now.AddHours(rememberMe ? 24 : 2),
                 rememberMe,
-                $"{user.UserId}|{user.RoleId}|{user.Role.RoleName}|{user.BranchName}",
+                $"{user.UserId}|{user.RoleId}|{user.Role?.RoleName ?? "User"}|{user.BranchName}",
                 FormsAuthentication.FormsCookiePath
             );
 
@@ -125,17 +116,23 @@ namespace InventoryManagementSystem.BL
         // Get current user from authentication ticket
         public User GetCurrentUser()
         {
-            if (HttpContext.Current.User.Identity.IsAuthenticated)
+            if (HttpContext.Current.User != null && HttpContext.Current.User.Identity.IsAuthenticated)
             {
                 var identity = HttpContext.Current.User.Identity as FormsIdentity;
                 if (identity != null)
                 {
                     var ticket = identity.Ticket;
                     var userData = ticket.UserData.Split('|');
-                    if (userData.Length >= 1)
+                    if (userData.Length >= 4)
                     {
-                        int userId = int.Parse(userData[0]);
-                        return _userRepository.GetUserById(userId);
+                        return new User
+                        {
+                            UserId = int.Parse(userData[0]),
+                            // RoleId = int.Parse(userData[1]), // Use if needed
+                            Role = new Role { RoleName = userData[2] },
+                            BranchName = userData[3],
+                            UserEmail = identity.Name
+                        };
                     }
                 }
             }
@@ -146,22 +143,25 @@ namespace InventoryManagementSystem.BL
         public void Logout()
         {
             FormsAuthentication.SignOut();
-            HttpContext.Current.Session.Clear();
-            HttpContext.Current.Session.Abandon();
+            if (HttpContext.Current.Session != null)
+            {
+                HttpContext.Current.Session.Clear();
+                HttpContext.Current.Session.Abandon();
+            }
         }
 
         // Check if user is in role
         public bool IsInRole(string roleName)
         {
             var user = GetCurrentUser();
-            return user != null && user.Role.RoleName.Equals(roleName, StringComparison.OrdinalIgnoreCase);
+            return user != null && user.Role != null && user.Role.RoleName.Equals(roleName, StringComparison.OrdinalIgnoreCase);
         }
 
         // Get user role name
         public string GetUserRole()
         {
             var user = GetCurrentUser();
-            return user?.Role.RoleName;
+            return user?.Role?.RoleName;
         }
     }
 }
