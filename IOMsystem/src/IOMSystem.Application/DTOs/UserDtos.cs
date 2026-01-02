@@ -1,0 +1,27 @@
+namespace IOMSystem.Application.DTOs;
+
+public class UserDto
+{
+    public int UserId { get; set; }
+    public string UserEmail { get; set; }
+    public string FullName { get; set; }
+    public string BranchName { get; set; }
+    public string RoleName { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedDate { get; set; }
+}
+
+public class LoginDto
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+}
+
+public class RegisterUserDto
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string FullName { get; set; }
+    public string BranchName { get; set; }
+    public string RoleName { get; set; }
+}

@@ -19,9 +19,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IStationaryRepository, StationaryRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Services
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddCors(options =>
 {

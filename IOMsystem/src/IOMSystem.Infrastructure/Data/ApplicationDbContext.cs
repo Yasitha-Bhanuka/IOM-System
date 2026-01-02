@@ -11,13 +11,26 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Stationary> Stationaries { get; set; }
     public DbSet<Product> Products { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Branch> Branches { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         // Configure unique index on BranchCode (Placeholder if migrated later)
-        // modelBuilder.Entity<Branch>().HasIndex(b => b.BranchCode).IsUnique();
+        // Configure unique index on BranchCode
+        modelBuilder.Entity<Branch>().HasIndex(b => b.BranchCode).IsUnique();
+
+        // User-Role relationship
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Role)
+            .WithMany(r => r.Users)
+            .HasForeignKey(u => u.RoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Products relationship
 
         // Products relationship
         modelBuilder.Entity<Product>()
