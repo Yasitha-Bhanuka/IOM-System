@@ -1,185 +1,120 @@
 using System;
 using System.Collections.Generic;
-using InventoryManagementSystem.DAL;
+using System.Linq;
+using InventoryManagementSystem.Helpers;
 using InventoryManagementSystem.Models;
 
 namespace InventoryManagementSystem.BL
 {
     public class ProductService
     {
-        private ProductRepository _productRepository;
-        private StationaryRepository _stationaryRepository;
-
         public ProductService()
         {
-            _productRepository = new ProductRepository();
-            _stationaryRepository = new StationaryRepository();
         }
 
-        // Create product with SKU generation
-        public bool CreateProduct(string productName, string locationCode, string productID, decimal price, int stockQuantity, int minStockThreshold)
-        {
-            try
-            {
-                // Validate inputs
-                if (string.IsNullOrWhiteSpace(productName) ||
-                    string.IsNullOrWhiteSpace(locationCode) ||
-                    string.IsNullOrWhiteSpace(productID))
-                {
-                    return false;
-                }
-
-                if (price <= 0 || stockQuantity < 0 || minStockThreshold < 0)
-                {
-                    return false;
-                }
-
-                // Verify stationary exists and is active
-                var stationary = _stationaryRepository.GetStationaryByCode(locationCode);
-                if (stationary == null || !stationary.IsActive)
-                {
-                    return false;
-                }
-
-                // Generate SKU
-                string sku = locationCode + productID.Trim().ToUpper();
-
-                // Check if SKU already exists
-                if (_productRepository.SKUExists(sku))
-                {
-                    return false;
-                }
-
-                // Validate SKU format
-                if (!ValidateSKU(sku))
-                {
-                    return false;
-                }
-
-                var product = new Product
-                {
-                    SKU = sku,
-                    ProductName = productName.Trim(),
-                    LocationCode = locationCode,
-                    ProductID = productID.Trim().ToUpper(),
-                    Price = price,
-                    StockQuantity = stockQuantity,
-                    MinStockThreshold = minStockThreshold,
-                    IsActive = true,
-                    CreatedDate = DateTime.Now
-                };
-
-                return _productRepository.CreateProduct(product);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        // Update product (cannot change SKU, LocationCode, or ProductID)
-        public bool UpdateProduct(string sku, string productName, decimal price, int stockQuantity, int minStockThreshold)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(productName) || price <= 0 || stockQuantity < 0 || minStockThreshold < 0)
-                {
-                    return false;
-                }
-
-                var product = _productRepository.GetProductBySKU(sku);
-                if (product == null)
-                {
-                    return false;
-                }
-
-                product.ProductName = productName.Trim();
-                product.Price = price;
-                product.StockQuantity = stockQuantity;
-                product.MinStockThreshold = minStockThreshold;
-
-                return _productRepository.UpdateProduct(product);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        // Get all products
         public List<Product> GetAllProducts()
         {
-            return _productRepository.GetAllProducts();
+            var productDtos = ApiClient.Instance.Get<List<InventoryManagementSystem.Helpers.ProductDto>>("products");
+            if (productDtos == null) return new List<Product>();
+
+            return productDtos.Select(MapToEntity).ToList();
         }
 
-        // Get active products
-        public List<Product> GetActiveProducts()
-        {
-            return _productRepository.GetActiveProducts();
-        }
-
-        // Get product by SKU
         public Product GetProductBySKU(string sku)
         {
-            return _productRepository.GetProductBySKU(sku);
+            var products = GetAllProducts();
+            return products.FirstOrDefault(p => p.SKU == sku);
         }
 
-        // Get products by location
-        public List<Product> GetProductsByLocation(string locationCode)
+        public bool CreateProduct(string productName, string locationCode, string productID, decimal price, int stockQuantity, int minStockThreshold)
         {
-            return _productRepository.GetProductsByLocation(locationCode);
+            var dto = new InventoryManagementSystem.Helpers.ProductDto
+            {
+                ProductName = productName,
+                LocationCode = locationCode,
+                ProductID = productID,
+                Price = price,
+                StockQuantity = stockQuantity,
+                MinStockThreshold = minStockThreshold,
+                IsActive = true
+            };
+
+            return ApiClient.Instance.Post("products", dto);
         }
 
-        // Delete product (soft delete)
+        public bool UpdateProduct(string sku, string productName, decimal price, int stockQuantity, int minStockThreshold)
+        {
+            var product = GetProductBySKU(sku);
+            if (product == null) return false;
+
+            var dto = new InventoryManagementSystem.Helpers.ProductDto
+            {
+                SKU = product.SKU,
+                ProductName = productName,
+                LocationCode = product.LocationCode,
+                ProductID = product.ProductID,
+                Price = price,
+                StockQuantity = stockQuantity,
+                MinStockThreshold = minStockThreshold,
+                IsActive = product.IsActive,
+                CreatedDate = product.CreatedDate
+            };
+
+            return ApiClient.Instance.Put($"products/{sku}", dto);
+        }
+
         public bool DeleteProduct(string sku)
         {
-            return _productRepository.DeleteProduct(sku);
+            return ApiClient.Instance.Delete($"products/{sku}");
         }
 
-        // Activate product
         public bool ActivateProduct(string sku)
         {
-            return _productRepository.ActivateProduct(sku);
+            var product = GetProductBySKU(sku);
+            if (product == null) return false;
+
+            var dto = new InventoryManagementSystem.Helpers.ProductDto
+            {
+                SKU = product.SKU,
+                ProductName = product.ProductName,
+                LocationCode = product.LocationCode,
+                ProductID = product.ProductID,
+                Price = product.Price,
+                StockQuantity = product.StockQuantity,
+                MinStockThreshold = product.MinStockThreshold,
+                IsActive = true,
+                CreatedDate = product.CreatedDate
+            };
+
+            return ApiClient.Instance.Put($"products/{sku}", dto);
         }
 
-        // Get suggested next Product ID
-        public string GetSuggestedProductID(string locationCode)
-        {
-            return _productRepository.GetNextProductID(locationCode);
-        }
-
-        // Search products by SKU or Name (for customer view)
         public List<Product> SearchProducts(string searchTerm)
         {
-            return _productRepository.SearchProducts(searchTerm);
+            var all = GetAllProducts();
+            if (string.IsNullOrWhiteSpace(searchTerm)) return all;
+            return all.Where(p => p.ProductName.ToLower().Contains(searchTerm.ToLower()) || p.SKU.ToLower().Contains(searchTerm.ToLower())).ToList();
         }
 
-        // Get low stock products (US-004)
-        public List<Product> GetLowStockProducts()
+        public List<Product> GetActiveProducts()
         {
-            return _productRepository.GetLowStockProducts();
+            return GetAllProducts().Where(p => p.IsActive).ToList();
         }
 
-        // Get count of low stock products (US-004)
-        public int GetLowStockCount()
+        private Product MapToEntity(InventoryManagementSystem.Helpers.ProductDto dto)
         {
-            return _productRepository.GetLowStockCount();
-        }
-
-        // Validate SKU format
-        private bool ValidateSKU(string sku)
-        {
-            if (string.IsNullOrWhiteSpace(sku) || sku.Length > 20)
+            return new Product
             {
-                return false;
-            }
-            return true;
-        }
-
-        // Check if SKU exists
-        public bool SKUExists(string sku)
-        {
-            return _productRepository.SKUExists(sku);
+                SKU = dto.SKU,
+                ProductName = dto.ProductName,
+                LocationCode = dto.LocationCode,
+                ProductID = dto.ProductID,
+                Price = dto.Price,
+                StockQuantity = dto.StockQuantity,
+                MinStockThreshold = dto.MinStockThreshold,
+                IsActive = dto.IsActive,
+                CreatedDate = dto.CreatedDate
+            };
         }
     }
 }
