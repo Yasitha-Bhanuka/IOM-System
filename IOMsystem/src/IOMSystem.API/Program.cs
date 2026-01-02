@@ -1,9 +1,27 @@
+using Microsoft.EntityFrameworkCore;
+using IOMSystem.Infrastructure.Data;
+using IOMSystem.Infrastructure.Repositories;
+using IOMSystem.Domain.Interfaces;
+using IOMSystem.Application.Services;
+using IOMSystem.Application.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Database
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseInMemoryDatabase("IOMSystemDb")); // Using InMemory for now, switch to SQL Server easily later
+
+// Repositories
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IStationaryRepository, StationaryRepository>();
+
+// Services
+builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddCors(options =>
 {
