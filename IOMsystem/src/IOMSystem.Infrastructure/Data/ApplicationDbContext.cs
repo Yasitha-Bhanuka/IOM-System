@@ -46,5 +46,19 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Product>()
             .Property(p => p.Price)
             .HasPrecision(18, 2);
+
+        // Order precision
+        modelBuilder.Entity<Order>()
+            .Property(o => o.TotalAmount)
+            .HasPrecision(18, 2);
+
+        // OrderItem precision
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.Subtotal)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.UnitPrice)
+            .HasPrecision(18, 2);
     }
 }
