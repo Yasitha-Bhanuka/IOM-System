@@ -34,4 +34,6 @@ public class Branch
 
     public ICollection<UserRegistrationRequest> UserRegistrationRequests { get; set; }
         = new List<UserRegistrationRequest>();
+
+    public ICollection<User> Users { get; set; } = new List<User>();
 }

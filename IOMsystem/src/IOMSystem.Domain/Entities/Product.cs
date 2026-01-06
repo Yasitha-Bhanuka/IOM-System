@@ -32,6 +32,5 @@ public class Product
 
     public DateTime? LastUpdatedDate { get; set; }
 
-    [ForeignKey(nameof(LocationCode))]
     public Stationary Stationary { get; set; } = default!;
 }

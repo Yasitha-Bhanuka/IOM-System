@@ -30,17 +30,13 @@ public class User
 
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-    public DateTime? LastLoginDate { get; set; }
-
     [StringLength(100)]
     public string? FullName { get; set; }
 
     [StringLength(20)]
     public string? PhoneNumber { get; set; }
 
-    [ForeignKey(nameof(RoleId))]
     public Role Role { get; set; } = default!;
 
-    [ForeignKey(nameof(BranchCode))]
     public Branch Branch { get; set; } = default!;
 }

@@ -26,23 +26,27 @@ public class ApplicationDbContext : DbContext
         // Configure unique index on BranchCode
         modelBuilder.Entity<Branch>().HasIndex(b => b.BranchCode).IsUnique();
 
-        // UserRegistrationRequest-Branch relationship
+        // UserRegistrationRequest → Branch
         modelBuilder.Entity<UserRegistrationRequest>()
             .HasOne(r => r.Branch)
-            .WithMany()
+            .WithMany(b => b.UserRegistrationRequests)
             .HasForeignKey(r => r.BranchCode)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // User-Role relationship
+        // User → Role
         modelBuilder.Entity<User>()
             .HasOne(u => u.Role)
             .WithMany(r => r.Users)
             .HasForeignKey(u => u.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Products relationship
+        // User → Branch
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Branch)
+            .WithMany(b => b.Users)
+            .HasForeignKey(u => u.BranchCode)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        // Products relationship
         // Branch-Stationary relationship (1:N)
         modelBuilder.Entity<Stationary>()
             .HasOne(s => s.Branch)
@@ -57,10 +61,18 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(p => p.LocationCode)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Ensure decimal precision for Price
-        modelBuilder.Entity<Product>()
-            .Property(p => p.Price)
-            .HasPrecision(18, 2);
+        // Order → User
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.User)
+            .WithMany()
+            .HasForeignKey(o => o.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Decimal precision
+        modelBuilder.Entity<Product>().Property(p => p.Price).HasPrecision(18, 2);
+        modelBuilder.Entity<Order>().Property(o => o.TotalAmount).HasPrecision(18, 2);
+        modelBuilder.Entity<OrderItem>().Property(oi => oi.UnitPrice).HasPrecision(18, 2);
+        modelBuilder.Entity<OrderItem>().Property(oi => oi.Subtotal).HasPrecision(18, 2);
 
         // Seed Roles
         modelBuilder.Entity<Role>().HasData(
@@ -68,19 +80,5 @@ public class ApplicationDbContext : DbContext
             new Role { RoleId = 2, RoleName = "User", Description = "Standard User", CreatedDate = new DateTime(2024, 1, 1) },
             new Role { RoleId = 3, RoleName = "Manager", Description = "Branch Manager", CreatedDate = new DateTime(2024, 1, 1) }
         );
-
-        // Order precision
-        modelBuilder.Entity<Order>()
-            .Property(o => o.TotalAmount)
-            .HasPrecision(18, 2);
-
-        // OrderItem precision
-        modelBuilder.Entity<OrderItem>()
-            .Property(oi => oi.Subtotal)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<OrderItem>()
-            .Property(oi => oi.UnitPrice)
-            .HasPrecision(18, 2);
     }
 }

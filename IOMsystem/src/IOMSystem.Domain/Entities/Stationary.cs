@@ -20,7 +20,6 @@ public class Stationary
 
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-    [ForeignKey(nameof(BranchCode))]
     public Branch Branch { get; set; } = default!;
 
     public ICollection<Product> Products { get; set; } = new List<Product>();
