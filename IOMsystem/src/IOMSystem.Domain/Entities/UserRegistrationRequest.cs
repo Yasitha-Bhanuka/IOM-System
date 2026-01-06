@@ -37,4 +37,7 @@ public class UserRegistrationRequest
     public DateTime? ActionDate { get; set; }
 
     public string? RejectionReason { get; set; }
+
+    [ForeignKey(nameof(BranchCode))]
+    public Branch Branch { get; set; } = default!;
 }

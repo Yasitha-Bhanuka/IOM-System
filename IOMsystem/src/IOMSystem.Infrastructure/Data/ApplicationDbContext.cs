@@ -26,6 +26,13 @@ public class ApplicationDbContext : DbContext
         // Configure unique index on BranchCode
         modelBuilder.Entity<Branch>().HasIndex(b => b.BranchCode).IsUnique();
 
+        // UserRegistrationRequest-Branch relationship
+        modelBuilder.Entity<UserRegistrationRequest>()
+            .HasOne(r => r.Branch)
+            .WithMany()
+            .HasForeignKey(r => r.BranchCode)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // User-Role relationship
         modelBuilder.Entity<User>()
             .HasOne(u => u.Role)
