@@ -7,16 +7,13 @@ namespace IOMSystem.Domain.Entities;
 public class Branch
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int BranchId { get; set; }
+    [StringLength(20)]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)] // User provides code
+    public required string BranchCode { get; set; }
 
     [Required]
     [StringLength(100)]
     public required string BranchName { get; set; }
-
-    [Required]
-    [StringLength(20)]
-    public required string BranchCode { get; set; }
 
     [StringLength(200)]
     public string? Address { get; set; }
