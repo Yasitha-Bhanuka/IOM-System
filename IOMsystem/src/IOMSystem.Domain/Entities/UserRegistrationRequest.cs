@@ -33,5 +33,5 @@ public class UserRegistrationRequest
 
     public int? ActionByUserId { get; set; }
     public DateTime? ActionDate { get; set; }
-    public string RejectionReason { get; set; }
+    public string? RejectionReason { get; set; }
 }

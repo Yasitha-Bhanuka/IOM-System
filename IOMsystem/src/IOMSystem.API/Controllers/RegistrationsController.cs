@@ -16,7 +16,7 @@ public class RegistrationsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] RegistrationRequestDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateRegistrationRequestDto dto)
     {
         var success = await _service.CreateRequestAsync(dto);
         if (!success) return BadRequest("Request failed. Email might exist.");
@@ -40,13 +40,9 @@ public class RegistrationsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        // Not directly exposed in Service yet? Service returns List. 
-        // Need to add GetById to Service Interface/Impl if strict.
-        // Actually Service doesn't have GetById exposed in Interface.
-        // Let's rely on GetAll/Pending for now or quick patch service.
-        // Wait, repository has it.
-        // I will add GetById to Service first.
-        return NotFound("Not implemented yet");
+        var request = await _service.GetRequestByIdAsync(id);
+        if (request == null) return NotFound();
+        return Ok(request);
     }
 
 
@@ -59,12 +55,9 @@ public class RegistrationsController : ControllerBase
     }
 
     [HttpPost("reject/{id}")]
-    public async Task<IActionResult> Reject(int id, [FromBody] RegistrationRequestDto actionDto)
+    public async Task<IActionResult> Reject(int id, [FromBody] RejectRegistrationDto actionDto)
     {
-        // Expecting ActionByUserId and RejectionReason in DTO
-        if (actionDto.ActionByUserId == null) return BadRequest("Admin ID required.");
-
-        var success = await _service.RejectRequestAsync(id, actionDto.ActionByUserId.Value, actionDto.RejectionReason);
+        var success = await _service.RejectRequestAsync(id, actionDto.ActionByUserId, actionDto.RejectionReason);
         if (!success) return BadRequest("Rejection failed.");
         return Ok("Rejected.");
     }
