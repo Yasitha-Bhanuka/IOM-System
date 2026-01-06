@@ -14,12 +14,12 @@
     <webopt:bundlereference runat="server" path="~/Content/css" />
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
+    <link href="~/dist/css/dashboard.css" rel="stylesheet" runat="server" />
 </head>
 <body>
     <form runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
-                <%--To learn more about bundling scripts in ScriptManager see https://go.microsoft.com/fwlink/?LinkID=301884 --%>
                 <%--Framework Scripts--%>
                 <asp:ScriptReference Name="MsAjaxBundle" />
                 <asp:ScriptReference Name="jquery" />
@@ -37,30 +37,28 @@
             </Scripts>
         </asp:ScriptManager>
 
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" title="more options">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" runat="server" href="~/">Application name</a>
+                    <a class="navbar-brand" runat="server" href="~/">IOM System</a>
                 </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a runat="server" href="~/">Home</a></li>
-                    </ul>
-                    <asp:LoginView runat="server" ViewStateMode="Disabled">
+                <div id="navbar" class="navbar-collapse collapse">
+                     <asp:LoginView runat="server" ViewStateMode="Disabled">
                         <AnonymousTemplate>
                             <ul class="nav navbar-nav navbar-right">
-                                <li><a runat="server" href="~/Account/Register">Register</a></li>
-                                <li><a runat="server" href="~/Account/Login">Log in</a></li>
+                                <li><a runat="server" href="~/Pages/Auth/Login">Log in</a></li>
+                                <li><a runat="server" href="~/Pages/Auth/Register">Register</a></li>
                             </ul>
                         </AnonymousTemplate>
                         <LoggedInTemplate>
                             <ul class="nav navbar-nav navbar-right">
-                                <li><a runat="server" href="~/Account/Manage" title="Manage your account">Hello, <%: Context.User.Identity.GetUserName()  %>!</a></li>
+                                <li><a runat="server" href="#" title="Manage your account">Hello, <%: Context.User.Identity.GetUserName()  %>!</a></li>
                                 <li>
                                     <asp:LoginStatus runat="server" LogoutAction="Redirect" LogoutText="Log off" LogoutPageUrl="~/" OnLoggingOut="Unnamed_LoggingOut" />
                                 </li>
@@ -69,14 +67,25 @@
                     </asp:LoginView>
                 </div>
             </div>
-        </div>
-        <div class="container body-content">
-            <asp:ContentPlaceHolder ID="MainContent" runat="server">
-            </asp:ContentPlaceHolder>
-            <hr />
-            <footer>
-                <p>&copy; <%: DateTime.Now.Year %> - My ASP.NET Application</p>
-            </footer>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3 col-md-2 sidebar">
+                    <ul class="nav nav-sidebar">
+                        <li class="<%= Request.Path.Contains("Dashboard") ? "active" : "" %>"><a runat="server" href="~/Pages/Dashboard/Default">Overview</a></li>
+                        <li class="<%= Request.Path.Contains("Admin/Users") ? "active" : "" %>"><a runat="server" href="~/Pages/Admin/Users">Users</a></li>
+                        <li class="<%= Request.Path.Contains("Products") ? "active" : "" %>"><a runat="server" href="#">Products</a></li>
+                        <li class="<%= Request.Path.Contains("Branches") ? "active" : "" %>"><a runat="server" href="#">Branches</a></li>
+                        <li class="<%= Request.Path.Contains("Stationaries") ? "active" : "" %>"><a runat="server" href="#">Stationaries</a></li>
+                        <li class="<%= Request.Path.Contains("Orders") ? "active" : "" %>"><a runat="server" href="#">Orders</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                    </asp:ContentPlaceHolder>
+                </div>
+            </div>
         </div>
     </form>
 </body>
