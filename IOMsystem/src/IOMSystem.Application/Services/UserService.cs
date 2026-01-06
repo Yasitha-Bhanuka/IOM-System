@@ -29,7 +29,8 @@ public class UserService : IUserService
             UserId = user.UserId,
             UserEmail = user.UserEmail,
             FullName = user.FullName ?? "",
-            BranchName = user.BranchName,
+            BranchName = user.Branch?.BranchName ?? "Unknown",
+            BranchCode = user.BranchCode,
             RoleName = user.Role?.RoleName ?? "Unknown",
             IsActive = user.IsActive,
             CreatedDate = user.CreatedDate
@@ -55,7 +56,7 @@ public class UserService : IUserService
             UserEmail = registerDto.Email,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt, // Storing as string in legacy style if needed, or Base64
-            BranchName = registerDto.BranchName,
+            BranchCode = registerDto.BranchCode,
             RoleId = role.RoleId,
             FullName = registerDto.FullName,
             IsActive = true,
@@ -76,7 +77,8 @@ public class UserService : IUserService
             UserId = user.UserId,
             UserEmail = user.UserEmail,
             FullName = user.FullName ?? "",
-            BranchName = user.BranchName,
+            BranchName = user.Branch?.BranchName ?? "Unknown",
+            BranchCode = user.BranchCode,
             RoleName = user.Role?.RoleName ?? "Unknown",
             IsActive = user.IsActive,
             CreatedDate = user.CreatedDate
@@ -102,7 +104,7 @@ public class UserService : IUserService
         if (user == null) return false;
 
         user.FullName = userDto.FullName;
-        user.BranchName = userDto.BranchName;
+        user.BranchCode = userDto.BranchCode;
         user.IsActive = userDto.IsActive;
         // Role Update logic if needed, assumes RoleName in DTO is valid or handled separately
         // Since Entity uses RoleId, we might need to lookup Role if changed.
@@ -142,7 +144,8 @@ public class UserService : IUserService
             UserId = user.UserId,
             UserEmail = user.UserEmail,
             FullName = user.FullName ?? "",
-            BranchName = user.BranchName,
+            BranchName = user.Branch?.BranchName ?? "Unknown",
+            BranchCode = user.BranchCode,
             RoleName = user.Role?.RoleName ?? "Unknown",
             IsActive = user.IsActive,
             CreatedDate = user.CreatedDate

@@ -10,15 +10,15 @@ public class Role
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int RoleId { get; set; }
 
-    [Required]
-    [StringLength(50)]
-    public required string RoleName { get; set; }
+    [Required, StringLength(50)]
+    public string RoleName { get; set; } = default!;
 
     [StringLength(200)]
     public string? Description { get; set; }
 
-    public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public Branch Branch { get; set; } = default!;
 
-    // Navigation property
-    public virtual ICollection<User> Users { get; set; } = new HashSet<User>();
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+    public ICollection<User> Users { get; set; } = new List<User>();
 }

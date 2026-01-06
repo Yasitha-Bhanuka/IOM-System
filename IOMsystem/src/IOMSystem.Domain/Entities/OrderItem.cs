@@ -3,35 +3,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IOMSystem.Domain.Entities;
 
+[Table("OrderItems")]
 public class OrderItem
 {
     [Key]
     public int OrderItemId { get; set; }
 
-    [Required]
     public int OrderId { get; set; }
 
-    [Required]
-    [StringLength(20)]
-    public required string SKU { get; set; }
+    [Required, StringLength(20)]
+    public string SKU { get; set; } = default!;
 
-    [Required]
-    [StringLength(100)]
-    public required string ProductName { get; set; }  // Snapshot at order time
+    [Required, StringLength(100)]
+    public string ProductName { get; set; } = default!;
 
-    [Required]
     public int Quantity { get; set; }
 
-    [Required]
-    public decimal UnitPrice { get; set; }  // Snapshot at order time
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal UnitPrice { get; set; }
 
-    [Required]
-    public decimal Subtotal { get; set; }  // Calculated: Quantity × UnitPrice
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Subtotal { get; set; }
 
-    // Navigation properties
-    [ForeignKey("OrderId")]
-    public virtual Order? Order { get; set; }
-
-    [ForeignKey("SKU")]
-    public virtual Product? Product { get; set; }
+    public Order Order { get; set; } = default!;
 }

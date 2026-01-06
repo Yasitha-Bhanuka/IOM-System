@@ -7,16 +7,12 @@ namespace IOMSystem.Domain.Entities;
 public class Branch
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int BranchId { get; set; }
-
-    [Required]
-    [StringLength(100)]
-    public required string BranchName { get; set; }
-
-    [Required]
     [StringLength(20)]
-    public required string BranchCode { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public string BranchCode { get; set; } = default!;
+
+    [Required, StringLength(100)]
+    public string BranchName { get; set; } = default!;
 
     [StringLength(200)]
     public string? Address { get; set; }
@@ -32,5 +28,12 @@ public class Branch
 
     public bool IsActive { get; set; } = true;
 
-    public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+    public ICollection<Stationary> Stationaries { get; set; } = new List<Stationary>();
+
+    public ICollection<UserRegistrationRequest> UserRegistrationRequests { get; set; }
+        = new List<UserRegistrationRequest>();
+
+    public ICollection<User> Users { get; set; } = new List<User>();
 }

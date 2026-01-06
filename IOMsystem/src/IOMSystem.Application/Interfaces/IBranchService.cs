@@ -4,9 +4,10 @@ namespace IOMSystem.Application.Interfaces;
 
 public interface IBranchService
 {
-    Task<List<BranchDto>> GetAllBranchesAsync();
-    Task<BranchDto?> GetBranchByIdAsync(int id);
-    Task<bool> CreateBranchAsync(BranchDto branchDto);
-    Task<bool> UpdateBranchAsync(int id, BranchDto branchDto);
-    Task<bool> DeleteBranchAsync(int id);
+    Task<List<BranchResponseDto>> GetAllBranchesAsync();
+    Task<BranchResponseDto?> GetBranchByIdAsync(string code);
+    Task<bool> CreateBranchAsync(CreateBranchDto branchDto);
+    Task<bool> UpdateBranchAsync(string code, UpdateBranchDto branchDto);
+    Task<bool> UpdateBranchStatusAsync(string code, bool isActive);
+    Task<bool> DeleteBranchAsync(string code);
 }

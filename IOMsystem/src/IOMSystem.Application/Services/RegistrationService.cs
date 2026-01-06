@@ -18,7 +18,7 @@ public class RegistrationService : IRegistrationService
         _userRepository = userRepository;
     }
 
-    public async Task<bool> CreateRequestAsync(RegistrationRequestDto dto)
+    public async Task<bool> CreateRequestAsync(CreateRegistrationRequestDto dto)
     {
         if (await _userRepository.EmailExistsAsync(dto.UserEmail)) return false;
         if (await _requestRepository.PendingExistsAsync(dto.UserEmail)) return false;
@@ -30,7 +30,7 @@ public class RegistrationService : IRegistrationService
             UserEmail = dto.UserEmail,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
-            BranchName = dto.BranchName,
+            BranchCode = dto.BranchCode,
             FullName = dto.FullName,
             PhoneNumber = dto.PhoneNumber,
             RequestDate = DateTime.Now,
@@ -41,26 +41,29 @@ public class RegistrationService : IRegistrationService
         return true;
     }
 
-    public async Task<List<RegistrationRequestDto>> GetPendingRequestsAsync()
+    public async Task<List<RegistrationResponseDto>> GetPendingRequestsAsync()
     {
         var requests = await _requestRepository.GetPendingAsync();
         return requests.Select(MapToDto).ToList();
     }
 
-    public async Task<List<RegistrationRequestDto>> GetAllRequestsAsync()
+    public async Task<List<RegistrationResponseDto>> GetAllRequestsAsync()
     {
         var requests = await _requestRepository.GetAllAsync();
         return requests.Select(MapToDto).ToList();
     }
 
-    public async Task<RegistrationRequestDto?> GetRequestByIdAsync(int id)
+    public async Task<RegistrationResponseDto?> GetRequestByIdAsync(int id)
     {
         var request = await _requestRepository.GetByIdAsync(id);
         return request == null ? null : MapToDto(request);
     }
 
+    // ... Approve method remains mostly same signature wise ...
+
     public async Task<bool> ApproveRequestAsync(int requestId, int approvedByUserId)
     {
+        // ... implementation same ...
         var request = await _requestRepository.GetByIdAsync(requestId);
         if (request == null || request.Status != "Pending") return false;
 
@@ -73,11 +76,8 @@ public class RegistrationService : IRegistrationService
             UserEmail = request.UserEmail,
             PasswordHash = request.PasswordHash,
             PasswordSalt = request.PasswordSalt,
-            BranchName = request.BranchName,
+            BranchCode = request.BranchCode,
             FullName = request.FullName,
-            // PhoneNumber property missing in User Entity in basic schema, check if needed.
-            // If User Entity does not have PhoneNumber, we skip it or update User Entity.
-            // Assuming simplified migration without schema change for User unless requested.
             RoleId = role.RoleId,
             IsActive = true,
             CreatedDate = DateTime.Now
@@ -116,14 +116,14 @@ public class RegistrationService : IRegistrationService
         return true;
     }
 
-    private RegistrationRequestDto MapToDto(UserRegistrationRequest r)
+    private RegistrationResponseDto MapToDto(UserRegistrationRequest r)
     {
-        return new RegistrationRequestDto
+        return new RegistrationResponseDto
         {
             RequestId = r.RequestId,
             UserEmail = r.UserEmail,
             FullName = r.FullName,
-            BranchName = r.BranchName,
+            BranchCode = r.BranchCode,
             PhoneNumber = r.PhoneNumber,
             RequestDate = r.RequestDate,
             Status = r.Status,

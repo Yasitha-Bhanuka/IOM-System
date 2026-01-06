@@ -14,14 +14,13 @@ public class BranchService : IBranchService
         _branchRepository = branchRepository;
     }
 
-    public async Task<List<BranchDto>> GetAllBranchesAsync()
+    public async Task<List<BranchResponseDto>> GetAllBranchesAsync()
     {
         var branches = await _branchRepository.GetAllAsync();
-        return branches.Select(b => new BranchDto
+        return branches.Select(b => new BranchResponseDto
         {
-            BranchId = b.BranchId,
-            BranchName = b.BranchName,
             BranchCode = b.BranchCode,
+            BranchName = b.BranchName,
             Address = b.Address,
             City = b.City,
             State = b.State,
@@ -30,16 +29,15 @@ public class BranchService : IBranchService
         }).ToList();
     }
 
-    public async Task<BranchDto?> GetBranchByIdAsync(int id)
+    public async Task<BranchResponseDto?> GetBranchByIdAsync(string code)
     {
-        var branch = await _branchRepository.GetByIdAsync(id);
+        var branch = await _branchRepository.GetByCodeAsync(code);
         if (branch == null) return null;
 
-        return new BranchDto
+        return new BranchResponseDto
         {
-            BranchId = branch.BranchId,
-            BranchName = branch.BranchName,
             BranchCode = branch.BranchCode,
+            BranchName = branch.BranchName,
             Address = branch.Address,
             City = branch.City,
             State = branch.State,
@@ -48,8 +46,11 @@ public class BranchService : IBranchService
         };
     }
 
-    public async Task<bool> CreateBranchAsync(BranchDto branchDto)
+    public async Task<bool> CreateBranchAsync(CreateBranchDto branchDto)
     {
+        // Check local duplicate since PK is user-defined
+        if (await _branchRepository.GetByCodeAsync(branchDto.BranchCode) != null) return false;
+
         var branch = new Branch
         {
             BranchName = branchDto.BranchName,
@@ -66,13 +67,13 @@ public class BranchService : IBranchService
         return true;
     }
 
-    public async Task<bool> UpdateBranchAsync(int id, BranchDto branchDto)
+    public async Task<bool> UpdateBranchAsync(string code, UpdateBranchDto branchDto)
     {
-        var branch = await _branchRepository.GetByIdAsync(id);
+        var branch = await _branchRepository.GetByCodeAsync(code);
         if (branch == null) return false;
 
         branch.BranchName = branchDto.BranchName;
-        branch.BranchCode = branchDto.BranchCode;
+        // BranchCode is PK and immutable in this update
         branch.Address = branchDto.Address;
         branch.City = branchDto.City;
         branch.State = branchDto.State;
@@ -83,9 +84,19 @@ public class BranchService : IBranchService
         return true;
     }
 
-    public async Task<bool> DeleteBranchAsync(int id)
+    public async Task<bool> UpdateBranchStatusAsync(string code, bool isActive)
     {
-        await _branchRepository.DeleteAsync(id);
+        var branch = await _branchRepository.GetByCodeAsync(code);
+        if (branch == null) return false;
+
+        branch.IsActive = isActive;
+        await _branchRepository.UpdateAsync(branch);
+        return true;
+    }
+
+    public async Task<bool> DeleteBranchAsync(string code)
+    {
+        await _branchRepository.DeleteAsync(code);
         return true;
     }
 }

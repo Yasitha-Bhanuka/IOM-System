@@ -1,18 +1,26 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IOMSystem.Domain.Entities;
 
+[Table("Stationaries")]
 public class Stationary
 {
     [Key]
-    [Required]
     [StringLength(20)]
-    public string LocationCode { get; set; }  // Primary Key: ST1-A, ST1-B, etc.
+    public string LocationCode { get; set; } = default!;
 
     [StringLength(500)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
-    public bool IsActive { get; set; }
+    [Required, StringLength(20)]
+    public string BranchCode { get; set; } = default!;
 
-    public DateTime CreatedDate { get; set; }
+    public bool IsActive { get; set; } = true;
+
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+    public Branch Branch { get; set; } = default!;
+
+    public ICollection<Product> Products { get; set; } = new List<Product>();
 }

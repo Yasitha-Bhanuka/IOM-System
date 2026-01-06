@@ -19,14 +19,9 @@ public class BranchRepository : IBranchRepository
         return await _context.Branches.ToListAsync();
     }
 
-    public async Task<Branch?> GetByIdAsync(int id)
-    {
-        return await _context.Branches.FindAsync(id);
-    }
-
     public async Task<Branch?> GetByCodeAsync(string code)
     {
-        return await _context.Branches.FirstOrDefaultAsync(b => b.BranchCode == code);
+        return await _context.Branches.FindAsync(code);
     }
 
     public async Task AddAsync(Branch branch)
@@ -41,9 +36,9 @@ public class BranchRepository : IBranchRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(string code)
     {
-        var branch = await _context.Branches.FindAsync(id);
+        var branch = await _context.Branches.FindAsync(code);
         if (branch != null)
         {
             _context.Branches.Remove(branch);

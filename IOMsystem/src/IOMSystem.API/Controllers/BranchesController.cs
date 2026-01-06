@@ -22,35 +22,41 @@ public class BranchesController : ControllerBase
         return Ok(branches);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{code}")]
+    public async Task<IActionResult> GetById(string code)
     {
-        var branch = await _branchService.GetBranchByIdAsync(id);
+        var branch = await _branchService.GetBranchByIdAsync(code);
         if (branch == null) return NotFound();
         return Ok(branch);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] BranchDto branchDto)
+    public async Task<IActionResult> Create([FromBody] CreateBranchDto branchDto)
     {
         await _branchService.CreateBranchAsync(branchDto);
-        return CreatedAtAction(nameof(GetById), new { id = branchDto.BranchId }, branchDto);
+        return CreatedAtAction(nameof(GetById), new { code = branchDto.BranchCode }, branchDto);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] BranchDto branchDto)
+    [HttpPut("{code}")]
+    public async Task<IActionResult> Update(string code, [FromBody] UpdateBranchDto branchDto)
     {
-        if (id != branchDto.BranchId && branchDto.BranchId != 0) return BadRequest();
-
-        var result = await _branchService.UpdateBranchAsync(id, branchDto);
+        var result = await _branchService.UpdateBranchAsync(code, branchDto);
         if (!result) return NotFound();
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpPatch("{code}/status")]
+    public async Task<IActionResult> UpdateStatus(string code, [FromBody] BranchStatusDto statusDto)
     {
-        await _branchService.DeleteBranchAsync(id);
+        var result = await _branchService.UpdateBranchStatusAsync(code, statusDto.IsActive);
+        if (!result) return NotFound();
+        return NoContent();
+    }
+
+    [HttpDelete("{code}")]
+    public async Task<IActionResult> Delete(string code)
+    {
+        await _branchService.DeleteBranchAsync(code);
         return NoContent();
     }
 }
