@@ -16,6 +16,8 @@ public class Role
     [StringLength(200)]
     public string? Description { get; set; }
 
+    public Branch Branch { get; set; } = default!;
+
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
     public ICollection<User> Users { get; set; } = new List<User>();
