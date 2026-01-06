@@ -45,6 +45,14 @@ public class BranchesController : ControllerBase
         return NoContent();
     }
 
+    [HttpPatch("{code}/status")]
+    public async Task<IActionResult> UpdateStatus(string code, [FromBody] BranchStatusDto statusDto)
+    {
+        var result = await _branchService.UpdateBranchStatusAsync(code, statusDto.IsActive);
+        if (!result) return NotFound();
+        return NoContent();
+    }
+
     [HttpDelete("{code}")]
     public async Task<IActionResult> Delete(string code)
     {

@@ -84,6 +84,16 @@ public class BranchService : IBranchService
         return true;
     }
 
+    public async Task<bool> UpdateBranchStatusAsync(string code, bool isActive)
+    {
+        var branch = await _branchRepository.GetByCodeAsync(code);
+        if (branch == null) return false;
+
+        branch.IsActive = isActive;
+        await _branchRepository.UpdateAsync(branch);
+        return true;
+    }
+
     public async Task<bool> DeleteBranchAsync(string code)
     {
         await _branchRepository.DeleteAsync(code);
