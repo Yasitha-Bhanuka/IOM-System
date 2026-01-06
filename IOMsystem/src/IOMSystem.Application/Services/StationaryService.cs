@@ -20,6 +20,7 @@ public class StationaryService : IStationaryService
         return stationaries.Select(s => new StationaryDto
         {
             LocationCode = s.LocationCode,
+            BranchCode = s.BranchCode,
             Description = s.Description,
             IsActive = s.IsActive,
             CreatedDate = s.CreatedDate
@@ -33,6 +34,7 @@ public class StationaryService : IStationaryService
         return new StationaryDto
         {
             LocationCode = s.LocationCode,
+            BranchCode = s.BranchCode,
             Description = s.Description,
             IsActive = s.IsActive,
             CreatedDate = s.CreatedDate
@@ -47,6 +49,7 @@ public class StationaryService : IStationaryService
         var stationary = new Stationary
         {
             LocationCode = dto.LocationCode,
+            BranchCode = dto.BranchCode,
             Description = dto.Description,
             IsActive = dto.IsActive,
             CreatedDate = DateTime.Now
@@ -61,6 +64,7 @@ public class StationaryService : IStationaryService
         if (stationary == null) return false;
 
         stationary.Description = dto.Description;
+        stationary.BranchCode = dto.BranchCode;
         stationary.IsActive = dto.IsActive;
         // Don't update LocationCode as it is PK usually, or restricted.
 

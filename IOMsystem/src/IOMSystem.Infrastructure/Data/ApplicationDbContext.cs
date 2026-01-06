@@ -36,10 +36,18 @@ public class ApplicationDbContext : DbContext
         // Products relationship
 
         // Products relationship
+        // Branch-Stationary relationship (1:N)
+        modelBuilder.Entity<Stationary>()
+            .HasOne(s => s.Branch)
+            .WithMany(b => b.Stationaries)
+            .HasForeignKey(s => s.BranchCode)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Stationary-Product relationship (1:1)
         modelBuilder.Entity<Product>()
             .HasOne(p => p.Stationary)
-            .WithMany()
-            .HasForeignKey(p => p.LocationCode)
+            .WithOne(s => s.Product)
+            .HasForeignKey<Product>(p => p.LocationCode)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Ensure decimal precision for Price

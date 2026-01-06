@@ -30,4 +30,7 @@ public class Branch
     public bool IsActive { get; set; } = true;
 
     public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+    // Navigation property
+    public virtual ICollection<Stationary> Stationaries { get; set; } = new List<Stationary>();
 }
