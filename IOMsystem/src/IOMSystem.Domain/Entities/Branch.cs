@@ -31,4 +31,7 @@ public class Branch
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
     public ICollection<Stationary> Stationaries { get; set; } = new List<Stationary>();
+
+    public ICollection<UserRegistrationRequest> UserRegistrationRequests { get; set; }
+        = new List<UserRegistrationRequest>();
 }

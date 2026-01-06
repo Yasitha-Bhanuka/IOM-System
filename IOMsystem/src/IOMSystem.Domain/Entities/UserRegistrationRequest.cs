@@ -21,15 +21,15 @@ public class UserRegistrationRequest
     [StringLength(100)]
     public string? FullName { get; set; }
 
-    [StringLength(20)]
-    public string? BranchCode { get; set; }
+    [Required, StringLength(20)]
+    public string BranchCode { get; set; } = default!;
 
     [StringLength(20)]
     public string? PhoneNumber { get; set; }
 
     public DateTime RequestDate { get; set; } = DateTime.UtcNow;
 
-    [StringLength(20)]
+    [Required, StringLength(20)]
     public string Status { get; set; } = "Pending";
 
     public int? ActionByUserId { get; set; }
@@ -38,6 +38,5 @@ public class UserRegistrationRequest
 
     public string? RejectionReason { get; set; }
 
-    [ForeignKey(nameof(BranchCode))]
     public Branch Branch { get; set; } = default!;
 }
