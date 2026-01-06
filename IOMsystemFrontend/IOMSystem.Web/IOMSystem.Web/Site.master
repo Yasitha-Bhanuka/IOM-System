@@ -1,4 +1,4 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Site.master.cs" Inherits="SiteMaster" %>
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="SiteMaster" %>
 
 <!DOCTYPE html>
 
@@ -14,6 +14,7 @@
     
     <!-- Google Fonts & Custom CSS -->
     <link href="~/dist/css/main.css" rel="stylesheet" />
+    <script src="/dist/js/api.service.js"></script>
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <!-- FontAwesome for icons (using CDN for simplicity) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -51,19 +52,30 @@
                     IOM System
                 </div>
                 <nav class="sidebar-nav">
-                    <a href="/" class="nav-item">
+                    <a href="~/Pages/Dashboard/Default.aspx" runat="server" class="nav-item">
                         <i class="fa-solid fa-chart-line"></i> Dashboard
                     </a>
-                    <a href="/Products.aspx" class="nav-item">
+                    <a href="~/Pages/Products/List.aspx" runat="server" class="nav-item">
                         <i class="fa-solid fa-box"></i> Products
                     </a>
-                    <a href="#" class="nav-item">
+                    <a href="~/Pages/Orders/List.aspx" runat="server" class="nav-item">
                         <i class="fa-solid fa-cart-shopping"></i> Orders
                     </a>
-                    <a href="#" class="nav-item">
+                    <a href="~/Pages/Stationaries/List.aspx" runat="server" class="nav-item">
+                        <i class="fa-solid fa-pencil"></i> Stationaries
+                    </a>
+                    <a href="~/Pages/Branches/List.aspx" runat="server" class="nav-item">
                         <i class="fa-solid fa-building"></i> Branches
                     </a>
-                    <a href="#" class="nav-item">
+                    
+                    <div style="padding: 0.75rem 1.5rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-top: 1rem;">
+                        Administration
+                    </div>
+                    
+                    <a href="~/Pages/Admin/Registrations.aspx" runat="server" class="nav-item">
+                        <i class="fa-solid fa-user-plus"></i> Registrations
+                    </a>
+                    <a href="~/Pages/Admin/Users.aspx" runat="server" class="nav-item">
                         <i class="fa-solid fa-users"></i> Users
                     </a>
                 </nav>

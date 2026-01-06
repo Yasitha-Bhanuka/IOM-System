@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Register" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
-    CodeFile="Register.aspx.cs" Inherits="Account_Register" %>
+    CodeBehind="Register.aspx.cs" Inherits="Account_Register" %>
 
     <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
         <div style="max-width: 500px; margin: 0 auto;">
