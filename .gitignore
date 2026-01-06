@@ -83,3 +83,9 @@ StyleCopReport.xml
 *_wpftmp.csproj
 /src/*/bin/
 /src/*/obj/
+
+# NuGet Packages
+packages/
+
+# ASP.NET
+App_Data/
