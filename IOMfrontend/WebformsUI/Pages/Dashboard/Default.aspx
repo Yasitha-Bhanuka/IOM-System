@@ -1,5 +1,5 @@
 <%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
-    CodeFile="Default.aspx.cs" Inherits="WebformsUI.Pages.Dashboard.Default" %>
+    CodeFile="Default.aspx.cs" Inherits="WebformsUI.Pages.Dashboard.DashboardDefault" %>
 
     <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
         <h1 class="page-header">Dashboard</h1>
