@@ -47,6 +47,13 @@ public class ApplicationDbContext : DbContext
             .Property(p => p.Price)
             .HasPrecision(18, 2);
 
+        // Seed Roles
+        modelBuilder.Entity<Role>().HasData(
+            new Role { RoleId = 1, RoleName = "Admin", Description = "Administrator", CreatedDate = new DateTime(2024, 1, 1) },
+            new Role { RoleId = 2, RoleName = "User", Description = "Standard User", CreatedDate = new DateTime(2024, 1, 1) },
+            new Role { RoleId = 3, RoleName = "Manager", Description = "Branch Manager", CreatedDate = new DateTime(2024, 1, 1) }
+        );
+
         // Order precision
         modelBuilder.Entity<Order>()
             .Property(o => o.TotalAmount)
