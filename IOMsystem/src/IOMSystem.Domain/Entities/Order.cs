@@ -3,34 +3,30 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IOMSystem.Domain.Entities;
 
+[Table("Orders")]
 public class Order
 {
     [Key]
     public int OrderId { get; set; }
 
-    [Required]
     public int UserId { get; set; }
 
-    [Required]
-    public DateTime OrderDate { get; set; }
+    public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
-    [Required]
+    [Column(TypeName = "decimal(18,2)")]
     public decimal TotalAmount { get; set; }
 
-    [Required]
-    [StringLength(20)]
-    public required string Status { get; set; }  // Pending, Approved, Shipped, Cancelled
+    [Required, StringLength(20)]
+    public string Status { get; set; } = default!;
 
     [StringLength(500)]
     public string? Notes { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
     public DateTime? LastUpdatedDate { get; set; }
 
-    // Navigation properties
-    [ForeignKey("UserId")]
-    public virtual User? User { get; set; }
+    public User User { get; set; } = default!;
 
-    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }

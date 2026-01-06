@@ -3,26 +3,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IOMSystem.Domain.Entities;
 
+[Table("Stationaries")]
 public class Stationary
 {
     [Key]
-    [Required]
     [StringLength(20)]
-    public string LocationCode { get; set; }  // Primary Key: ST1-A, ST1-B, etc.
+    public string LocationCode { get; set; } = default!;
 
     [StringLength(500)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
-    [Required]
-    [StringLength(20)]
-    public required string BranchCode { get; set; } // FK to Branch
+    [Required, StringLength(20)]
+    public string BranchCode { get; set; } = default!;
 
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
-    public DateTime CreatedDate { get; set; }
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-    [ForeignKey("BranchCode")]
-    public virtual Branch? Branch { get; set; }
+    [ForeignKey(nameof(BranchCode))]
+    public Branch Branch { get; set; } = default!;
 
-    public virtual Product? Product { get; set; } // 1:1 Relationship
+    public ICollection<Product> Products { get; set; } = new List<Product>();
 }

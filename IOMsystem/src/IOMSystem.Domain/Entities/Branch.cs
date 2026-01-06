@@ -8,12 +8,11 @@ public class Branch
 {
     [Key]
     [StringLength(20)]
-    [DatabaseGenerated(DatabaseGeneratedOption.None)] // User provides code
-    public required string BranchCode { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public string BranchCode { get; set; } = default!;
 
-    [Required]
-    [StringLength(100)]
-    public required string BranchName { get; set; }
+    [Required, StringLength(100)]
+    public string BranchName { get; set; } = default!;
 
     [StringLength(200)]
     public string? Address { get; set; }
@@ -29,8 +28,7 @@ public class Branch
 
     public bool IsActive { get; set; } = true;
 
-    public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-    // Navigation property
-    public virtual ICollection<Stationary> Stationaries { get; set; } = new List<Stationary>();
+    public ICollection<Stationary> Stationaries { get; set; } = new List<Stationary>();
 }
