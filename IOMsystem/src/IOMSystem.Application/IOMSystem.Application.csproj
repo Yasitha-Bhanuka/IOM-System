@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IOMSystem.Domain\IOMSystem.Domain.csproj" />
+    <ProjectReference Include="..\..\IOMSystem.Contracts\IOMSystem.Contracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

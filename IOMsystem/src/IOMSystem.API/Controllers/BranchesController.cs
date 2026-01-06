@@ -1,4 +1,4 @@
-using IOMSystem.Application.DTOs;
+using IOMSystem.Contracts.DTOs;
 using IOMSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

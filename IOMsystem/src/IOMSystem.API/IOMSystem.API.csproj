@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IOMSystem.Application\IOMSystem.Application.csproj" />
     <ProjectReference Include="..\IOMSystem.Infrastructure\IOMSystem.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\IOMSystem.Contracts\IOMSystem.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

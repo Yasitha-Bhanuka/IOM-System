@@ -1,5 +1,8 @@
 
-namespace IOMSystem.Application.DTOs;
+using System;
+using System.Collections.Generic;
+
+namespace IOMSystem.Contracts.DTOs;
 
 public class StationaryDto
 {

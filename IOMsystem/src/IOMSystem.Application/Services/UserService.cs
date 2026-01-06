@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
-using IOMSystem.Application.DTOs;
+using IOMSystem.Contracts.DTOs;
 using IOMSystem.Application.Interfaces;
 using IOMSystem.Domain.Entities;
 using IOMSystem.Domain.Interfaces;
