@@ -6,6 +6,7 @@ public class UserDto
     public string UserEmail { get; set; }
     public string FullName { get; set; }
     public string BranchName { get; set; }
+    public string BranchCode { get; set; }
     public string RoleName { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedDate { get; set; }
@@ -22,6 +23,6 @@ public class RegisterUserDto
     public string Email { get; set; }
     public string Password { get; set; }
     public string FullName { get; set; }
-    public string BranchName { get; set; }
+    public string BranchCode { get; set; }
     public string RoleName { get; set; }
 }

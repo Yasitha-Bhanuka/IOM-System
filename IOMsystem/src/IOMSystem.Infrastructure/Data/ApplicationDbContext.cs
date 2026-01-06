@@ -43,11 +43,11 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(s => s.BranchCode)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Stationary-Product relationship (1:1)
+        // Stationary-Product relationship (1:N)
         modelBuilder.Entity<Product>()
             .HasOne(p => p.Stationary)
-            .WithOne(s => s.Product)
-            .HasForeignKey<Product>(p => p.LocationCode)
+            .WithMany(s => s.Products)
+            .HasForeignKey(p => p.LocationCode)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Ensure decimal precision for Price

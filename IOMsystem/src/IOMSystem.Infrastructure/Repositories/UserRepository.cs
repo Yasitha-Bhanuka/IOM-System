@@ -18,12 +18,16 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(u => u.Role)
+            .Include(u => u.Branch)
             .FirstOrDefaultAsync(u => u.UserEmail == email);
     }
 
     public async Task<User?> GetByIdAsync(int id)
     {
-        return await _context.Users.FindAsync(id);
+        return await _context.Users
+            .Include(u => u.Role)
+            .Include(u => u.Branch)
+            .FirstOrDefaultAsync(u => u.UserId == id);
     }
 
     public async Task AddAsync(User user)
@@ -45,7 +49,10 @@ public class UserRepository : IUserRepository
 
     public async Task<List<User>> GetAllAsync()
     {
-        return await _context.Users.Include(u => u.Role).ToListAsync();
+        return await _context.Users
+            .Include(u => u.Role)
+            .Include(u => u.Branch)
+            .ToListAsync();
     }
 
     public async Task UpdateAsync(User user)
