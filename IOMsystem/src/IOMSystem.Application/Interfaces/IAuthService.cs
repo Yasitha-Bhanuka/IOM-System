@@ -1,4 +1,4 @@
-using IOMSystem.Contract.DTOs;
+using IOMSystem.Application.DTOs;
 using IOMSystem.Domain.Entities;
 
 namespace IOMSystem.Application.Interfaces

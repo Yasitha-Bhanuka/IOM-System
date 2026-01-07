@@ -1,7 +1,7 @@
 using IOMSystem.Application.Interfaces;
 using IOMSystem.Domain.Entities;
 using IOMSystem.Domain.Interfaces;
-using IOMSystem.Contract.DTOs;
+using IOMSystem.Application.DTOs;
 
 namespace IOMSystem.Application.Services;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IOMSystem.Contract.DTOs
+namespace IOMSystem.Application.DTOs
 {
     public class StationaryDto
     {

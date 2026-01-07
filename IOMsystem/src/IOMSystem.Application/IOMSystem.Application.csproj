@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\IOMSystem.Contract\IOMSystem.Contract.csproj" />
+
     <ProjectReference Include="..\IOMSystem.Domain\IOMSystem.Domain.csproj" />
   </ItemGroup>
 

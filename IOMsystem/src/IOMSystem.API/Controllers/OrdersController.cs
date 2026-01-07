@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IOMSystem.Application.Interfaces;
-using IOMSystem.Contract.DTOs;
+using IOMSystem.Application.DTOs;
 
 namespace IOMSystem.API.Controllers;
 

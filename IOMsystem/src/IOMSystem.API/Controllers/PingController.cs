@@ -9,6 +9,6 @@ public class PingController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok("Pong! Backend is connected.");
+        return Ok("Ping! Backend is connected.");
     }
 }

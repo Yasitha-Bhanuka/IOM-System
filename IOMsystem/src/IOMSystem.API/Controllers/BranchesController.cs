@@ -1,5 +1,5 @@
 using IOMSystem.Application.Interfaces;
-using IOMSystem.Contract.DTOs;
+using IOMSystem.Application.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
