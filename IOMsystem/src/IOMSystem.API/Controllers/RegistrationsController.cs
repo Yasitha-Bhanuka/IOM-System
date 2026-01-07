@@ -1,11 +1,13 @@
 using IOMSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IOMSystem.Contract.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IOMSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class RegistrationsController : ControllerBase
 {
     private readonly IRegistrationService _service;
@@ -15,6 +17,7 @@ public class RegistrationsController : ControllerBase
         _service = service;
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateRegistrationRequestDto dto)
     {
@@ -23,6 +26,7 @@ public class RegistrationsController : ControllerBase
         return Ok("Request created.");
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpGet("pending")]
     public async Task<IActionResult> GetPending()
     {
@@ -30,6 +34,7 @@ public class RegistrationsController : ControllerBase
         return Ok(list);
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -37,6 +42,7 @@ public class RegistrationsController : ControllerBase
         return Ok(list);
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -46,6 +52,7 @@ public class RegistrationsController : ControllerBase
     }
 
 
+    [Authorize(Roles = "Manager")]
     [HttpPost("approve/{id}")]
     public async Task<IActionResult> Approve(int id, [FromBody] int approvedByUserId)
     {
@@ -54,6 +61,7 @@ public class RegistrationsController : ControllerBase
         return Ok("Approved.");
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpPost("reject/{id}")]
     public async Task<IActionResult> Reject(int id, [FromBody] RejectRegistrationDto actionDto)
     {
@@ -62,6 +70,7 @@ public class RegistrationsController : ControllerBase
         return Ok("Rejected.");
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

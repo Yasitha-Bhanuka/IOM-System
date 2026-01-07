@@ -7,6 +7,7 @@ namespace IOMSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class BranchesController : ControllerBase
 {
     private readonly IBranchService _branchService;
@@ -31,6 +32,7 @@ public class BranchesController : ControllerBase
         return Ok(branch);
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateBranchDto branchDto)
     {
@@ -38,6 +40,7 @@ public class BranchesController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { code = branchDto.BranchCode }, branchDto);
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpPut("{code}")]
     public async Task<IActionResult> Update(string code, [FromBody] UpdateBranchDto branchDto)
     {
@@ -46,6 +49,7 @@ public class BranchesController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpPatch("{code}/status")]
     public async Task<IActionResult> UpdateStatus(string code, [FromBody] BranchStatusDto statusDto)
     {
@@ -54,6 +58,7 @@ public class BranchesController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpDelete("{code}")]
     public async Task<IActionResult> Delete(string code)
     {
