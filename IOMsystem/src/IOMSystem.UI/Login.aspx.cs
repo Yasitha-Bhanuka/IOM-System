@@ -30,37 +30,32 @@ public partial class Login : Page
 
         try
         {
-            // Ideally read from Web.config
-            string apiUrl = "https://localhost:7123/api/users/login"; 
-
-            using (var client = new HttpClient())
+            var loginDto = new IOMSystem.Contract.DTOs.LoginDto
             {
-                var loginData = new { Email = email, Password = password };
-                var json = new JavaScriptSerializer().Serialize(loginData);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                Email = email,
+                Password = password
+            };
 
-                var response = await client.PostAsync(apiUrl, content);
+            var apiService = new IOMSystem.UI.Services.ApiService();
+            // Note: Verify endpoint matches your API controller route
+            var user = await apiService.LoginAsync(loginDto);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseString = await response.Content.ReadAsStringAsync();
-                    // Assuming response returns user object or token. 
-                    // Deserialize if needed to get Role/Token.
-                    
-                    Session["UserEmail"] = email;
-                    Session["UserToken"] = responseString; // Store token/user object
-                    lblMessage.Text = "Login successful!";
-                    lblMessage.ForeColor = System.Drawing.Color.Green;
-                    lblMessage.Visible = true;
-                    
-                    // Redirect to Dashboard
-                    // Response.Redirect("~/Dashboard.aspx");
-                }
-                else
-                {
-                    lblMessage.Text = "Invalid login credentials.";
-                    lblMessage.Visible = true;
-                }
+            if (user != null)
+            {
+                Session["UserEmail"] = user.UserEmail;
+                Session["UserRole"] = user.RoleName;
+                Session["UserToken"] = "dummy-token"; // Replace if API returns JWT separately
+
+                lblMessage.Text = "Login successful!";
+                lblMessage.ForeColor = System.Drawing.Color.Green;
+                lblMessage.Visible = true;
+
+                // Response.Redirect("~/Dashboard.aspx");
+            }
+            else
+            {
+                lblMessage.Text = "Invalid login credentials.";
+                lblMessage.Visible = true;
             }
         }
         catch (Exception ex)
