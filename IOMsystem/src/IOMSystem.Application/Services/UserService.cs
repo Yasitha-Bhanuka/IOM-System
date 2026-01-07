@@ -37,35 +37,6 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<bool> RegisterUserAsync(RegisterUserDto registerDto)
-    {
-        if (await _userRepository.EmailExistsAsync(registerDto.Email))
-            return false;
-
-        CreatePasswordHash(registerDto.Password, out string passwordHash, out string passwordSalt);
-
-        // Assign default role if exists, else create or error? 
-        // For migration: assume role exists or default to "User"
-        var role = await _userRepository.GetRoleByNameAsync(registerDto.RoleName)
-                   ?? await _userRepository.GetRoleByNameAsync("User");
-
-        if (role == null) return false; // Or throw
-
-        var user = new User
-        {
-            UserEmail = registerDto.Email,
-            PasswordHash = passwordHash,
-            PasswordSalt = passwordSalt, // Storing as string in legacy style if needed, or Base64
-            BranchCode = registerDto.BranchCode,
-            RoleId = role.RoleId,
-            FullName = registerDto.FullName,
-            IsActive = true,
-            CreatedDate = DateTime.Now
-        };
-
-        await _userRepository.AddAsync(user);
-        return true;
-    }
 
     public async Task<UserDto?> GetUserByEmailAsync(string email)
     {

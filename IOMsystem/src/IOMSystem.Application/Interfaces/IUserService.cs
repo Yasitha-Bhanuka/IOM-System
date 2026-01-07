@@ -5,7 +5,6 @@ namespace IOMSystem.Application.Interfaces;
 public interface IUserService
 {
     Task<UserDto?> LoginAsync(LoginDto loginDto);
-    Task<bool> RegisterUserAsync(RegisterUserDto registerDto);
     Task<UserDto?> GetUserByEmailAsync(string email);
     Task<UserDto?> GetUserByIdAsync(int userId);
     Task<List<UserDto>> GetAllUsersAsync();

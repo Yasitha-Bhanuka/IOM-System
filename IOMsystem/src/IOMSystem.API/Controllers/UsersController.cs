@@ -25,15 +25,6 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterUserDto registerDto)
-    {
-        var result = await _userService.RegisterUserAsync(registerDto);
-        if (!result)
-            return BadRequest("Registration failed. Email might already exist.");
-
-        return Ok("User registered successfully.");
-    }
 
     [HttpGet("{email}")]
     public async Task<IActionResult> GetByEmail(string email)

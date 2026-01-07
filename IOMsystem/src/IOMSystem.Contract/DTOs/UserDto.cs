@@ -22,12 +22,4 @@ namespace IOMSystem.Contract.DTOs
         public string Password { get; set; }
     }
 
-    public class RegisterUserDto
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string FullName { get; set; }
-        public string BranchCode { get; set; }
-        public string RoleName { get; set; }
-    }
 }
