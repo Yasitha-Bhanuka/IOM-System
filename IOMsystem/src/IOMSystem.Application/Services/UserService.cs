@@ -10,10 +10,12 @@ namespace IOMSystem.Application.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IAuthService _authService;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, IAuthService authService)
     {
         _userRepository = userRepository;
+        _authService = authService;
     }
 
     public async Task<UserDto?> LoginAsync(LoginDto loginDto)
@@ -24,6 +26,8 @@ public class UserService : IUserService
         if (!VerifyPassword(loginDto.Password, user.PasswordHash, user.PasswordSalt))
             return null;
 
+        var token = _authService.GenerateToken(user);
+
         return new UserDto
         {
             UserId = user.UserId,
@@ -33,7 +37,8 @@ public class UserService : IUserService
             BranchCode = user.BranchCode,
             RoleName = user.Role?.RoleName ?? "Unknown",
             IsActive = user.IsActive,
-            CreatedDate = user.CreatedDate
+            CreatedDate = user.CreatedDate,
+            Token = token
         };
     }
 

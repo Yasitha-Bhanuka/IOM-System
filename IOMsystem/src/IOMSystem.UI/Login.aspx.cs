@@ -44,7 +44,7 @@ public partial class Login : Page
             {
                 Session["UserEmail"] = user.UserEmail;
                 Session["UserRole"] = user.RoleName;
-                Session["UserToken"] = "dummy-token"; // Replace if API returns JWT separately
+                Session["UserToken"] = user.Token;
 
                 lblMessage.Text = "Login successful!";
                 lblMessage.ForeColor = System.Drawing.Color.Green;

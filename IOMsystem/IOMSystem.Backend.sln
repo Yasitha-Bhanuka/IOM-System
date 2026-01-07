@@ -16,6 +16,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "IOMSystem.UI", "src\IOMSystem.UI\", "{B6021C1F-F3CD-392B-CFEE-7E5A3E7603C0}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
+		ProjectReferences = "{04099b89-c750-42b7-9c73-f8794c10e0e5}|IOMSystem.Contract.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_58887"
 		Debug.AspNetCompiler.PhysicalPath = "src\IOMSystem.UI\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_58887\"

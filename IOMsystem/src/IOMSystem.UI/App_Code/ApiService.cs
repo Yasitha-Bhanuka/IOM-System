@@ -4,8 +4,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using IOMSystem.Contract.DTOs;
 using System.Configuration;
+using IOMSystem.Contract.DTOs;
 
 namespace IOMSystem.UI.Services
 {
@@ -21,6 +21,13 @@ namespace IOMSystem.UI.Services
             _httpClient.BaseAddress = new Uri(_apiBaseUrl);
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // Add Token if exists
+            var token = System.Web.HttpContext.Current.Session["UserToken"] as string;
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         public async Task<T> PostAsync<T>(string endpoint, object data)
@@ -35,7 +42,7 @@ namespace IOMSystem.UI.Services
                 var responseData = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<T>(responseData);
             }
-            
+
             // Handle error (logging, throwing exception, etc.)
             throw new Exception($"API Error: {response.StatusCode}");
         }
@@ -57,7 +64,7 @@ namespace IOMSystem.UI.Services
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
         {
             // Assuming the endpoint is "auth/login" or similar
-            return await PostAsync<UserDto>("auth/login", loginDto); 
+            return await PostAsync<UserDto>("auth/login", loginDto);
         }
 
         // Add other methods for Products, Orders, etc.
