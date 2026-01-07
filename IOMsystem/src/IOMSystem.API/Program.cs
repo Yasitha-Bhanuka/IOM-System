@@ -34,15 +34,7 @@ builder.Services.AddScoped<IStationaryService, StationaryService>();
 builder.Services.AddScoped<IRegistrationRequestRepository, RegistrationRequestRepository>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+
 
 // Authentication
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -80,7 +72,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors("AllowAll");
+
 
 app.MapControllers();
 
