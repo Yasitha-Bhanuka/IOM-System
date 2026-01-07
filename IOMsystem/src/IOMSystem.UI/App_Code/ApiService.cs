@@ -21,17 +21,27 @@ namespace IOMSystem.UI.Services
             _httpClient.BaseAddress = new Uri(_apiBaseUrl);
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
 
-            // Add Token if exists
-            var token = System.Web.HttpContext.Current.Session["UserToken"] as string;
-            if (!string.IsNullOrEmpty(token))
+        private void EnsureToken()
+        {
+            if (System.Web.HttpContext.Current != null && System.Web.HttpContext.Current.Session != null)
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var token = System.Web.HttpContext.Current.Session["UserToken"] as string;
+                if (!string.IsNullOrEmpty(token))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
+                else
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = null;
+                }
             }
         }
 
         public async Task<T> PostAsync<T>(string endpoint, object data)
         {
+            EnsureToken();
             var json = JsonConvert.SerializeObject(data);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -49,6 +59,7 @@ namespace IOMSystem.UI.Services
 
         public async Task<T> GetAsync<T>(string endpoint)
         {
+            EnsureToken();
             var response = await _httpClient.GetAsync(endpoint);
 
             if (response.IsSuccessStatusCode)
@@ -63,10 +74,25 @@ namespace IOMSystem.UI.Services
         // Specific methods using DTOs
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
         {
-            // Assuming the endpoint is "auth/login" or similar
-            return await PostAsync<UserDto>("auth/login", loginDto);
+            return await PostAsync<UserDto>("users/login", loginDto);
         }
 
-        // Add other methods for Products, Orders, etc.
+        public async Task<bool> CreateRegistrationRequestAsync(CreateRegistrationRequestDto dto)
+        {
+            try
+            {
+                // We don't expect a return object for creation, just 200 OK.
+                // Re-using PostAsync might try to deserialize Void/String, so we use string return or void.
+                // Let's make a generic non-returning Post or handle it here.
+                var json = JsonConvert.SerializeObject(dto);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("registrations", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

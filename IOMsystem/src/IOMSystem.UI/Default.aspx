@@ -9,7 +9,11 @@
             <script runat="server">
         protected void Page_Load(object sender, EventArgs e)
                 {
-                    Response.Redirect("~/Login.aspx");
+                    if (Session["UserToken"] != null) {
+                        Response.Redirect("~/Pages/Common/Dashboard.aspx");
+                    } else {
+                        Response.Redirect("~/Pages/Auth/Login.aspx");
+                    }
                 }
             </script>
         </head>

@@ -69,6 +69,13 @@ public partial class SiteMaster : MasterPage
 
     }
 
+    protected void Logout_Click(object sender, EventArgs e)
+    {
+        Session.Clear();
+        Session.Abandon();
+        Response.Redirect("~/Pages/Auth/Login.aspx");
+    }
+
     protected void Unnamed_LoggingOut(object sender, LoginCancelEventArgs e)
     {
         Context.GetOwinContext().Authentication.SignOut();

@@ -13,6 +13,19 @@
 </head>
 <body>
     <form runat="server">
+        <nav class="navbar">
+            <a href="/" class="navbar-brand">IOM System</a>
+            <div class="navbar-menu">
+                <% if (Session["UserToken"] == null) { %>
+                    <a href="<%: ResolveUrl("~/Pages/Auth/Login.aspx") %>" class="nav-link">Login</a>
+                <% } else { %>
+                    <a href="<%: ResolveUrl("~/Pages/Common/Dashboard.aspx") %>" class="nav-link active">Dashboard</a>
+                    <a href="#" class="nav-link">Products</a>
+                    <a href="#" class="nav-link">Branches</a>
+                    <asp:LinkButton runat="server" ID="LogoutBtn" CssClass="btn-logout" OnClick="Logout_Click" Text="Logout" />
+                <% } %>
+            </div>
+        </nav>
         <div class="container body-content">
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
