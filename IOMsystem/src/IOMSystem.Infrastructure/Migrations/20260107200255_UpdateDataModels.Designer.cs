@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IOMSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260107045017_UpdateDataModels")]
+    [Migration("20260107200255_UpdateDataModels")]
     partial class UpdateDataModels
     {
         /// <inheritdoc />
