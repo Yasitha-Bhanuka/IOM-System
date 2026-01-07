@@ -7,7 +7,7 @@ namespace IOMSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -17,7 +17,7 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
 
-    [AllowAnonymous]
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
@@ -37,7 +37,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [Authorize(Roles = "Manager")]
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -53,7 +53,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [Authorize(Roles = "Manager")]
+
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UserDto dto)
     {
@@ -63,7 +63,7 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = "Manager")]
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

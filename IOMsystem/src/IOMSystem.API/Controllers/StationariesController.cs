@@ -7,7 +7,7 @@ namespace IOMSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+
 public class StationariesController : ControllerBase
 {
     private readonly IStationaryService _service;
@@ -32,7 +32,7 @@ public class StationariesController : ControllerBase
         return Ok(item);
     }
 
-    [Authorize(Roles = "Manager")]
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] StationaryDto dto)
     {
@@ -41,7 +41,7 @@ public class StationariesController : ControllerBase
         return CreatedAtAction(nameof(GetByCode), new { code = dto.LocationCode }, dto);
     }
 
-    [Authorize(Roles = "Manager")]
+
     [HttpPut("{code}")]
     public async Task<IActionResult> Update(string code, [FromBody] StationaryDto dto)
     {
@@ -51,7 +51,7 @@ public class StationariesController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = "Manager")]
+
     [HttpDelete("{code}")]
     public async Task<IActionResult> Delete(string code)
     {

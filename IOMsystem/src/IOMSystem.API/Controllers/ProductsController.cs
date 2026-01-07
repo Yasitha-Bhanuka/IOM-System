@@ -7,7 +7,7 @@ namespace IOMSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -32,7 +32,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
-    [Authorize(Roles = "Manager")]
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ProductDto productDto)
     {
@@ -41,7 +41,7 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(GetBySku), new { sku = productDto.LocationCode + productDto.ProductID }, productDto);
     }
 
-    [Authorize(Roles = "Manager")]
+
     [HttpPut("{sku}")]
     public async Task<IActionResult> Update(string sku, [FromBody] ProductDto productDto)
     {
@@ -50,7 +50,7 @@ public class ProductsController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = "Manager")]
+
     [HttpDelete("{sku}")]
     public async Task<IActionResult> Delete(string sku)
     {
