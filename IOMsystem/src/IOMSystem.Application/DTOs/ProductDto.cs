@@ -14,6 +14,7 @@ namespace IOMSystem.Application.DTOs
         public int StockQuantity { get; set; }
         public int MinStockThreshold { get; set; }
         public bool IsActive { get; set; }
+        public bool IsLowStock { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }

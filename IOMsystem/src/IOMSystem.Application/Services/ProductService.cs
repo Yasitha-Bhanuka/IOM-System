@@ -110,6 +110,7 @@ public class ProductService : IProductService
             StockQuantity = product.StockQuantity,
             MinStockThreshold = product.MinStockThreshold,
             IsActive = product.IsActive,
+            IsLowStock = product.StockQuantity < product.MinStockThreshold,
             CreatedDate = product.CreatedDate
         };
     }
