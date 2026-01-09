@@ -37,7 +37,7 @@ public static class DbInitializer
 
             CreatePasswordHash("Admin@123", out string passwordHash, out string passwordSalt);
 
-            var adminUser = new User
+            var adminUser = new User    
             {
                 UserEmail = "admin@iomsystem.com",
                 PasswordHash = passwordHash,
